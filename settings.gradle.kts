@@ -1,0 +1,1 @@
+rootProject.name = "com.bhardwaj.intern-backend"
