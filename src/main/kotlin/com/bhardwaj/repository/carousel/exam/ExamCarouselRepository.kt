@@ -1,15 +1,14 @@
 package com.bhardwaj.repository.carousel.exam
 
-import com.bhardwaj.models.carousel.exam.ExamCarousel
-import com.bhardwaj.models.carousel.exam.ExamCarouselResponse
+import com.bhardwaj.models.ExamCarousel
 
 interface ExamCarouselRepository {
     // For Admin
-    suspend fun examCarouselById(examCarouselId: String): ExamCarousel
-    suspend fun insertExamCarousel(examCarousel: ExamCarousel)
-    suspend fun deleteExamCarousel(examCarouselId: String)
-    suspend fun updateExamCarousel(examCarousel: ExamCarousel): ExamCarousel
+    suspend fun getExamCarouselById(examCarouselId: String): ExamCarousel?
+    suspend fun insertExamCarousel(examCarousel: ExamCarousel): Boolean
+    suspend fun deleteExamCarousel(examCarouselId: String): Boolean
+    suspend fun updateExamCarousel(examCarousel: ExamCarousel): ExamCarousel?
 
     // For Client
-    suspend fun getAllExamCarousel(): ExamCarouselResponse
+    suspend fun getAllExamCarousel(): List<ExamCarousel>
 }

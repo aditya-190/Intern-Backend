@@ -1,7 +1,7 @@
 package com.bhardwaj.routes
 
 import com.bhardwaj.models.Message
-import com.bhardwaj.models.user.User
+import com.bhardwaj.models.User
 import com.bhardwaj.repository.user.UserRepository
 import io.ktor.application.*
 import io.ktor.http.*
@@ -48,7 +48,7 @@ fun Route.userRoutes() {
                 }
             }
             call.respond(
-                status = HttpStatusCode.BadRequest,
+                status = HttpStatusCode.OK,
                 message = response
             )
         }
@@ -59,7 +59,7 @@ fun Route.userRoutes() {
             if (userRepository.insertUser(user)) {
                 call.respond(
                     status = HttpStatusCode.OK,
-                    message = Message(message = "User Created Successfully.")
+                    message = user
                 )
             } else {
                 call.respond(

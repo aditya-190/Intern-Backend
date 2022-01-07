@@ -1,41 +1,37 @@
 package com.bhardwaj.repository.exam
 
-import com.bhardwaj.models.exam.Exam
-import com.bhardwaj.models.exam.ExamResponse
+import com.bhardwaj.models.Exam
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.eq
 
 class ExamRepositoryImpl(
-    private val database: CoroutineDatabase,
+    database: CoroutineDatabase,
 ) : ExamRepository {
-    override suspend fun getExamById(examId: String): Exam {
-        TODO("Not yet implemented")
+
+    private val examTable = database.getCollection<Exam>()
+
+    override suspend fun getExamById(examId: String): Exam? {
+        return examTable.findOne(filter = Exam::postId eq examId)
     }
 
-    override suspend fun insertExam(exam: Exam) {
-        TODO("Not yet implemented")
+    override suspend fun insertExam(exam: Exam): Boolean {
+        return examTable.insertOne(document = exam).wasAcknowledged()
     }
 
-    override suspend fun insertMultipleExams(exams: List<Exam>) {
-        TODO("Not yet implemented")
+    override suspend fun insertMultipleExams(exams: List<Exam>): Boolean {
+        return examTable.insertMany(documents = exams).wasAcknowledged()
     }
 
-    override suspend fun updateExam(exam: Exam): Exam {
-        TODO("Not yet implemented")
+    override suspend fun updateExam(exam: Exam): Exam? {
+        examTable.updateOne(filter = Exam::postId eq exam.postId, target = exam)
+        return examTable.findOne(filter = Exam::postId eq exam.postId)
     }
 
-    override suspend fun deleteExam(examId: String) {
-        TODO("Not yet implemented")
+    override suspend fun deleteExam(examId: String): Boolean {
+        return examTable.deleteOne(filter = Exam::postId eq examId).wasAcknowledged()
     }
 
-    override suspend fun deleteMultipleExams(examIds: List<String>) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun deleteAllExams() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun getNewExams(page: Int, limit: Int): ExamResponse {
-        TODO("Not yet implemented")
+    override suspend fun getNewExams(): List<Exam> {
+        return examTable.find().descendingSort(Exam::lastUpdated).toList()
     }
 }

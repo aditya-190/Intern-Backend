@@ -1,4 +1,4 @@
-package com.bhardwaj.models.filter
+package com.bhardwaj.models
 
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId

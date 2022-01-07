@@ -1,4 +1,4 @@
-package com.bhardwaj.models.carousel.job
+package com.bhardwaj.models
 
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
@@ -7,6 +7,7 @@ import org.bson.types.ObjectId
 @Serializable
 data class JobCarousel(
     @BsonId
-    val carouselId: String = ObjectId().toString(),
-    val carouselImage: String? = null,
+    val jobCarouselId: String = ObjectId().toString(),
+    val jobCarouselImage: String? = null,
+    val placeInCarousel: String? = null
 )

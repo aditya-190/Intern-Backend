@@ -1,6 +1,6 @@
 package com.bhardwaj.repository.user
 
-import com.bhardwaj.models.user.User
+import com.bhardwaj.models.User
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 

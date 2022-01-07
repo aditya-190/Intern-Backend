@@ -1,7 +1,5 @@
-package com.bhardwaj.models.user
+package com.bhardwaj.models
 
-import com.bhardwaj.models.category.Category
-import com.bhardwaj.models.language.Language
 import kotlinx.serialization.Serializable
 import org.bson.codecs.pojo.annotations.BsonId
 import org.bson.types.ObjectId

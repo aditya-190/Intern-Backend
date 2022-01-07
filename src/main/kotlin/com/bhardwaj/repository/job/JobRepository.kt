@@ -1,18 +1,15 @@
 package com.bhardwaj.repository.job
 
-import com.bhardwaj.models.job.Job
-import com.bhardwaj.models.job.JobResponse
+import com.bhardwaj.models.Job
 
 interface JobRepository {
     // For Admin
-    suspend fun getJobById(jobId: String): Job
-    suspend fun insertJob(job: Job)
-    suspend fun insertMultipleJobs(jobs: List<Job>)
-    suspend fun updateJob(job: Job): Job
-    suspend fun deleteJob(jobId: String)
-    suspend fun deleteMultipleJobs(jobsIds: List<String>)
-    suspend fun deleteAllJobs()
+    suspend fun getJobById(jobId: String): Job?
+    suspend fun insertJob(job: Job): Boolean
+    suspend fun insertMultipleJobs(jobs: List<Job>): Boolean
+    suspend fun updateJob(job: Job): Job?
+    suspend fun deleteJob(jobId: String): Boolean
 
     // For Client
-    suspend fun getNewJobs(page: Int, limit: Int): JobResponse
+    suspend fun getNewJobs(): List<Job>
 }

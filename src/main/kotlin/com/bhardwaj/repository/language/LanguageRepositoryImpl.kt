@@ -1,29 +1,33 @@
 package com.bhardwaj.repository.language
 
-import com.bhardwaj.models.language.Language
-import com.bhardwaj.models.language.LanguageResponse
+import com.bhardwaj.models.Language
 import org.litote.kmongo.coroutine.CoroutineDatabase
+import org.litote.kmongo.eq
 
 class LanguageRepositoryImpl(
-    private val database: CoroutineDatabase,
+    database: CoroutineDatabase,
 ) : LanguageRepository {
-    override suspend fun getLanguageById(languageId: String): Language {
-        TODO("Not yet implemented")
+
+    private val languageTable = database.getCollection<Language>()
+
+    override suspend fun getLanguageById(languageId: String): Language? {
+        return languageTable.findOne(filter = Language::languageId eq languageId)
     }
 
-    override suspend fun insertLanguage(language: Language) {
-        TODO("Not yet implemented")
+    override suspend fun insertLanguage(language: Language): Boolean {
+        return languageTable.insertOne(document = language).wasAcknowledged()
     }
 
-    override suspend fun deleteLanguage(languageId: String) {
-        TODO("Not yet implemented")
+    override suspend fun deleteLanguage(languageId: String): Boolean {
+        return languageTable.deleteOne(filter = Language::languageId eq languageId).wasAcknowledged()
     }
 
-    override suspend fun updateLanguage(language: Language): Language {
-        TODO("Not yet implemented")
+    override suspend fun updateLanguage(language: Language): Language? {
+        languageTable.updateOne(filter = Language::languageId eq language.languageId, target = language)
+        return languageTable.findOne(filter = Language::languageId eq language.languageId)
     }
 
-    override suspend fun getAllLanguage(): LanguageResponse {
-        TODO("Not yet implemented")
+    override suspend fun getAllLanguage(): List<Language> {
+        return languageTable.find().ascendingSort(Language::languageNameInEnglish).toList()
     }
 }

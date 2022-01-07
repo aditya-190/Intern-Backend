@@ -1,18 +1,15 @@
 package com.bhardwaj.repository.filter
 
-import com.bhardwaj.models.filter.Filter
-import com.bhardwaj.models.filter.FilterResponse
+import com.bhardwaj.models.Filter
 
 interface FilterRepository {
     // For Admin
-    suspend fun getFilterById(filterId: String): Filter
-    suspend fun insertFilter(filter: Filter)
-    suspend fun insertMultipleFilters(filters: List<Filter>)
-    suspend fun updateFilter(filter: Filter): Filter
-    suspend fun deleteFilter(filterId: String)
-    suspend fun deleteAllFilters()
+    suspend fun getFilterById(filterId: String): Filter?
+    suspend fun insertFilter(filter: Filter): Boolean
+    suspend fun updateFilter(filter: Filter): Filter?
+    suspend fun deleteFilter(filterId: String): Boolean
 
     // For Client
-    suspend fun getAllFilter(page: Int, limit: Int): FilterResponse
-    suspend fun getAllFilterByCategoryId(categoryId: String, page: Int, limit: Int): FilterResponse
+    suspend fun getAllFilter(): List<Filter>
+    suspend fun getAllFilterByCategoryId(categoryId: String): List<Filter>
 }
