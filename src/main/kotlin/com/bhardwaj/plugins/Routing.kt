@@ -7,8 +7,10 @@ import io.ktor.routing.*
 fun Application.configureRouting() {
     routing {
         categoryRoutes()
+        examCarouselRoutes()
         examRoutes()
         filterRoutes()
+        jobCarouselRoutes()
         jobRoutes()
         languageRoutes()
         userRoutes()

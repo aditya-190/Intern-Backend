@@ -1,6 +1,21 @@
 package com.bhardwaj.di
 
-import com.bhardwaj.repository.*
+import com.bhardwaj.repository.carousel.exam.ExamCarouselRepository
+import com.bhardwaj.repository.carousel.exam.ExamCarouselRepositoryImpl
+import com.bhardwaj.repository.carousel.job.JobCarouselRepository
+import com.bhardwaj.repository.carousel.job.JobCarouselRepositoryImpl
+import com.bhardwaj.repository.category.CategoryRepository
+import com.bhardwaj.repository.category.CategoryRepositoryImpl
+import com.bhardwaj.repository.exam.ExamRepository
+import com.bhardwaj.repository.exam.ExamRepositoryImpl
+import com.bhardwaj.repository.filter.FilterRepository
+import com.bhardwaj.repository.filter.FilterRepositoryImpl
+import com.bhardwaj.repository.job.JobRepository
+import com.bhardwaj.repository.job.JobRepositoryImpl
+import com.bhardwaj.repository.language.LanguageRepository
+import com.bhardwaj.repository.language.LanguageRepositoryImpl
+import com.bhardwaj.repository.user.UserRepository
+import com.bhardwaj.repository.user.UserRepositoryImpl
 import com.bhardwaj.utils.Constants.DATABASE_NAME
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
@@ -35,5 +50,13 @@ val koinModule = module {
 
     single<UserRepository> {
         UserRepositoryImpl(get())
+    }
+
+    single<ExamCarouselRepository> {
+        ExamCarouselRepositoryImpl(get())
+    }
+
+    single<JobCarouselRepository> {
+        JobCarouselRepositoryImpl(get())
     }
 }
