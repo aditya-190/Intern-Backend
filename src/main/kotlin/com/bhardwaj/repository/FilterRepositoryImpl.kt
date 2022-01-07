@@ -1,7 +1,8 @@
 package com.bhardwaj.repository
 
-import com.bhardwaj.models.Filter
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class FilterRepositoryImpl : FilterRepository {
-    override val filters: List<Filter> = emptyList()
+class FilterRepositoryImpl(
+    private val database: CoroutineDatabase,
+) : FilterRepository {
 }

@@ -1,40 +1,39 @@
 package com.bhardwaj.di
 
 import com.bhardwaj.repository.*
+import com.bhardwaj.utils.Constants.DATABASE_NAME
 import org.koin.dsl.module
+import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.reactivestreams.KMongo
 
-val categoryModule = module {
+val koinModule = module {
+    single {
+        KMongo.createClient()
+            .coroutine
+            .getDatabase(DATABASE_NAME)
+    }
+
     single<CategoryRepository> {
-        CategoryRepositoryImpl()
+        CategoryRepositoryImpl(get())
     }
-}
 
-val examModule = module {
     single<ExamRepository> {
-        ExamRepositoryImpl()
+        ExamRepositoryImpl(get())
     }
-}
 
-val filterModule = module {
     single<FilterRepository> {
-        FilterRepositoryImpl()
+        FilterRepositoryImpl(get())
     }
-}
 
-val jobModule = module {
     single<JobRepository> {
-        JobRepositoryImpl()
+        JobRepositoryImpl(get())
     }
-}
 
-val languageModule = module {
     single<LanguageRepository> {
-        LanguageRepositoryImpl()
+        LanguageRepositoryImpl(get())
     }
-}
 
-val userModule = module {
     single<UserRepository> {
-        UserRepositoryImpl()
+        UserRepositoryImpl(get())
     }
 }

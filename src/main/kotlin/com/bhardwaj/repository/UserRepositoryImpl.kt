@@ -1,7 +1,8 @@
 package com.bhardwaj.repository
 
-import com.bhardwaj.models.User
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class UserRepositoryImpl : UserRepository {
-    override val users: List<User> = emptyList()
+class UserRepositoryImpl(
+    private val database: CoroutineDatabase,
+) : UserRepository {
 }

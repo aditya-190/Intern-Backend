@@ -1,7 +1,8 @@
 package com.bhardwaj.repository
 
-import com.bhardwaj.models.Language
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class LanguageRepositoryImpl : LanguageRepository {
-    override val languages: List<Language> = emptyList()
+class LanguageRepositoryImpl(
+    private val database: CoroutineDatabase,
+) : LanguageRepository {
 }

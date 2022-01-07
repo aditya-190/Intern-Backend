@@ -1,7 +1,8 @@
 package com.bhardwaj.repository
 
-import com.bhardwaj.models.Category
+import org.litote.kmongo.coroutine.CoroutineDatabase
 
-class CategoryRepositoryImpl : CategoryRepository {
-    override val categories: List<Category> = emptyList()
+class CategoryRepositoryImpl(
+    private val database: CoroutineDatabase,
+) : CategoryRepository {
 }
