@@ -15,6 +15,7 @@ class LanguageRepositoryImpl(
     }
 
     override suspend fun insertLanguage(language: Language): Boolean {
+        if (languageTable.countDocuments(filter = Language::languageName eq language.languageName) > 0) return false
         return languageTable.insertOne(document = language).wasAcknowledged()
     }
 

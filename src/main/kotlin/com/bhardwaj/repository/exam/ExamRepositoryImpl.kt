@@ -15,6 +15,15 @@ class ExamRepositoryImpl(
     }
 
     override suspend fun insertExam(exam: Exam): Boolean {
+        if (examTable.find(
+                filters = arrayOf(
+                    Exam::examName eq exam.examName,
+                    Exam::examOrganiser eq exam.examOrganiser,
+                    Exam::registerPage eq exam.registerPage,
+                )
+            ).toList().isNotEmpty()
+        ) return false
+
         return examTable.insertOne(document = exam).wasAcknowledged()
     }
 

@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 data class Language(
     @BsonId
     val languageId: String = ObjectId().toString(),
-    val languageName: String,
-    val languageNameInEnglish: String,
-    val lastUpdated: Long
+    val languageName: String? = null,
+    val languageNameInEnglish: String? = null,
+    val lastUpdated: Long? = null
 )

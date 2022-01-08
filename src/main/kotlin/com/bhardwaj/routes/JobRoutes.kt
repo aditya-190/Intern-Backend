@@ -49,18 +49,18 @@ fun Route.jobRoutes() {
         post {
             val job = call.receive<Job>()
 
-            validateJob(this, job)
-
-            if (jobRepository.insertJob(job)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = job
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Job Not Created.")
-                )
+            if (validateJob(this, job)) {
+                if (jobRepository.insertJob(job)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = job
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Job Not Created.")
+                    )
+                }
             }
         }
 
@@ -69,21 +69,21 @@ fun Route.jobRoutes() {
             val job = call.receive<Job>()
             val isJobInDb = jobRepository.getJobById(job.postId)
 
-            validateJob(this, job)
+            if (validateJob(this, job)) {
+                if (isJobInDb != null) {
+                    val updatedJob =
+                        jobRepository.updateJob(job) ?: Message(message = "Failed to Update.")
 
-            if (isJobInDb != null) {
-                val updatedJob =
-                    jobRepository.updateJob(job) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedJob
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Job ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedJob
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Job ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -113,41 +113,46 @@ fun Route.jobRoutes() {
     }
 }
 
-private suspend fun validateJob(pipelineContext: PipelineContext<Unit, ApplicationCall>, job: Job) {
-    when {
-        job.companyName.isEmpty() -> {
+private suspend fun validateJob(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    job: Job
+): Boolean {
+    return when {
+        job.companyName.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Company Name Field is Required."
+                message = Message(message = "Company Name Field is Required.")
             )
+            false
         }
-
-        job.postTitle.isEmpty() -> {
+        job.postTitle.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Post Title Field is Required."
+                message = Message(message = "Post Title Field is Required.")
             )
+            false
         }
-
-        job.postDescription.isEmpty() -> {
+        job.postDescription.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Post Description Field is Required."
+                message = Message(message = "Post Description Field is Required.")
             )
+            false
         }
-
-        job.applyNowPage.isEmpty() -> {
+        job.applyNowPage.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Apply Now Page URL Field is Required."
+                message = Message(message = "Apply Now Page URL Field is Required.")
             )
+            false
         }
-
-        job.jobTitle.isEmpty() -> {
+        job.jobTitle.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Job Title Field is Required."
+                message = Message(message = "Job Title Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

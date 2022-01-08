@@ -49,18 +49,18 @@ fun Route.examRoutes() {
         post {
             val exam = call.receive<Exam>()
 
-            validateExam(this, exam)
-
-            if (examRepository.insertExam(exam)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = exam
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Exam Not Created.")
-                )
+            if (validateExam(this, exam)) {
+                if (examRepository.insertExam(exam)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = exam
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Exam Not Created.")
+                    )
+                }
             }
         }
 
@@ -69,21 +69,21 @@ fun Route.examRoutes() {
             val exam = call.receive<Exam>()
             val isExamInDb = examRepository.getExamById(exam.postId)
 
-            validateExam(this, exam)
+            if (validateExam(this, exam)) {
+                if (isExamInDb != null) {
+                    val updatedExam =
+                        examRepository.updateExam(exam) ?: Message(message = "Failed to Update.")
 
-            if (isExamInDb != null) {
-                val updatedExam =
-                    examRepository.updateExam(exam) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedExam
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Exam ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedExam
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Exam ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -113,34 +113,39 @@ fun Route.examRoutes() {
     }
 }
 
-private suspend fun validateExam(pipelineContext: PipelineContext<Unit, ApplicationCall>, exam: Exam) {
-    when {
-        exam.examName.isEmpty() -> {
+private suspend fun validateExam(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    exam: Exam
+): Boolean {
+    return when {
+        exam.examName.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Exam Name Field is Required."
+                message = Message(message = "Exam Name Field is Required.")
             )
+            false
         }
-
-        exam.examOrganiser.isEmpty() -> {
+        exam.examOrganiser.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Exam Organiser Field is Required."
+                message = Message(message = "Exam Organiser Field is Required.")
             )
+            false
         }
-
-        exam.lastDateToRegister.isEmpty() -> {
+        exam.lastDateToRegister.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Last Date To Register Field is Required."
+                message = Message(message = "Last Date To Register Field is Required.")
             )
+            false
         }
-
-        exam.registerPage.isEmpty() -> {
+        exam.registerPage.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Register Page Field is Required."
+                message = Message(message = "Register Page Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

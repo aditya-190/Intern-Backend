@@ -49,18 +49,18 @@ fun Route.examCarouselRoutes() {
         post {
             val examCarousel = call.receive<ExamCarousel>()
 
-            validateExamCarousel(this, examCarousel)
-
-            if (examCarouselRepository.insertExamCarousel(examCarousel)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = examCarousel
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Exam Carousel Not Created.")
-                )
+            if (validateExamCarousel(this, examCarousel)) {
+                if (examCarouselRepository.insertExamCarousel(examCarousel)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = examCarousel
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Exam Carousel Not Created.")
+                    )
+                }
             }
         }
 
@@ -68,23 +68,24 @@ fun Route.examCarouselRoutes() {
         put {
             val examCarousel = call.receive<ExamCarousel>()
 
-            validateExamCarousel(this, examCarousel)
+            if (validateExamCarousel(this, examCarousel)) {
+                val isExamCarouselInDb = examCarouselRepository.getExamCarouselById(examCarousel.examCarouselId)
 
-            val isExamCarouselInDb = examCarouselRepository.getExamCarouselById(examCarousel.examCarouselId)
+                if (isExamCarouselInDb != null) {
+                    val updatedExamCarousel =
+                        examCarouselRepository.updateExamCarousel(examCarousel)
+                            ?: Message(message = "Failed to Update.")
 
-            if (isExamCarouselInDb != null) {
-                val updatedExamCarousel =
-                    examCarouselRepository.updateExamCarousel(examCarousel) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedExamCarousel
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Exam Carousel ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedExamCarousel
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Exam Carousel ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -114,20 +115,25 @@ fun Route.examCarouselRoutes() {
     }
 }
 
-private suspend fun validateExamCarousel(pipelineContext: PipelineContext<Unit, ApplicationCall>, examCarousel: ExamCarousel) {
-    when {
-        examCarousel.examCarouselImage.isEmpty() -> {
+private suspend fun validateExamCarousel(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    examCarousel: ExamCarousel
+): Boolean {
+    return when {
+        examCarousel.examCarouselImage.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Exam Carousel Image Field is Required."
+                message = Message(message = "Exam Carousel Image Field is Required.")
             )
+            false
         }
-
-        examCarousel.placeInCarousel.isEmpty() -> {
+        examCarousel.placeInCarousel.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Place In Carousel Field is Required."
+                message = Message(message = "Place In Carousel Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

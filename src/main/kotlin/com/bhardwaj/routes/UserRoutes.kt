@@ -58,18 +58,18 @@ fun Route.userRoutes() {
         post {
             val user = call.receive<User>()
 
-            validateUser(this, user)
-
-            if (userRepository.insertUser(user)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = user
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "User Not Created.")
-                )
+            if (validateUser(this, user)) {
+                if (userRepository.insertUser(user)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = user
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "User Not Created or Already Exists.")
+                    )
+                }
             }
         }
 
@@ -77,23 +77,22 @@ fun Route.userRoutes() {
         put {
             val user = call.receive<User>()
 
-            validateUser(this, user)
+            if (validateUser(this, user)) {
+                val isUserInDb = userRepository.getUserById(user.userId)
+                if (isUserInDb != null) {
+                    val updatedUser =
+                        userRepository.updateUser(user) ?: Message(message = "Failed to Update.")
 
-            val isUserInDb = userRepository.getUserById(user.userId)
-
-            if (isUserInDb != null) {
-                val updatedUser =
-                    userRepository.updateUser(user) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedUser
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "User ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedUser
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "User ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -123,27 +122,32 @@ fun Route.userRoutes() {
     }
 }
 
-private suspend fun validateUser(pipelineContext: PipelineContext<Unit, ApplicationCall>, user: User) {
-    when {
-        user.name.isEmpty() -> {
+private suspend fun validateUser(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    user: User
+): Boolean {
+    return when {
+        user.name.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "User Name Field is Required."
+                message = Message(message = "User Name Field is Required.")
             )
+            false
         }
-
-        user.email.isEmpty() -> {
+        user.email.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Email Field is Required."
+                message = Message(message = "Email Field is Required.")
             )
+            false
         }
-
-        user.password.isEmpty() -> {
+        user.password.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Password Field is Required."
+                message = Message(message = "Password Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

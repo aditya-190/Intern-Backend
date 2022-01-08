@@ -49,18 +49,18 @@ fun Route.categoryRoutes() {
         post {
             val category = call.receive<Category>()
 
-            validateCategory(this, category)
-
-            if (categoryRepository.insertCategory(category)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = category
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Category Not Created.")
-                )
+            if (validateCategory(this, category)) {
+                if (categoryRepository.insertCategory(category)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = category
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Category Not Created.")
+                    )
+                }
             }
         }
 
@@ -69,21 +69,21 @@ fun Route.categoryRoutes() {
             val category = call.receive<Category>()
             val isCategoryInDb = categoryRepository.getCategoryById(category.categoryId)
 
-            validateCategory(this, category)
+            if (validateCategory(this, category)) {
+                if (isCategoryInDb != null) {
+                    val updatedCategory =
+                        categoryRepository.updateCategory(category) ?: Message(message = "Failed to Update.")
 
-            if (isCategoryInDb != null) {
-                val updatedCategory =
-                    categoryRepository.updateCategory(category) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedCategory
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Category ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedCategory
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Category ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -113,13 +113,18 @@ fun Route.categoryRoutes() {
     }
 }
 
-private suspend fun validateCategory(pipelineContext: PipelineContext<Unit, ApplicationCall>, category: Category) {
-    when {
-        category.categoryName.isEmpty() -> {
+private suspend fun validateCategory(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    category: Category
+): Boolean {
+    return when {
+        category.categoryName.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Category Name Field is Required."
+                message = Message(message = "Category Name Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

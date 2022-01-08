@@ -27,6 +27,7 @@ class UserRepositoryImpl(
     }
 
     override suspend fun insertUser(user: User): Boolean {
+        if (userTable.countDocuments(filter = User::email eq user.email) > 0) return false
         return userTable.insertOne(document = user).wasAcknowledged()
     }
 

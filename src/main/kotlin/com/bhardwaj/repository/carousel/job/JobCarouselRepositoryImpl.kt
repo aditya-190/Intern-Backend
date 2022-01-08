@@ -15,6 +15,7 @@ class JobCarouselRepositoryImpl(
     }
 
     override suspend fun insertJobCarousel(jobCarousel: JobCarousel): Boolean {
+        if (jobCarouselTable.countDocuments(filter = JobCarousel::jobCarouselImage eq jobCarousel.jobCarouselImage) > 0) return false
         return jobCarouselTable.insertOne(document = jobCarousel).wasAcknowledged()
     }
 

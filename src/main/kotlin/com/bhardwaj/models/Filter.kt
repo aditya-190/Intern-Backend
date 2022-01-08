@@ -8,7 +8,7 @@ import org.bson.types.ObjectId
 data class Filter(
     @BsonId
     val filterId: String = ObjectId().toString(),
-    val filterInCategoryId: String,
-    val filterName: String,
-    val lastUpdated: Long
+    val filterInCategoryId: String? = null,
+    val filterName: String? = null,
+    val lastUpdated: Long? = null
 )

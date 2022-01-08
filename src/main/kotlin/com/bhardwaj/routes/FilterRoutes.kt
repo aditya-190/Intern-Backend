@@ -1,6 +1,5 @@
 package com.bhardwaj.routes
 
-import com.bhardwaj.models.Category
 import com.bhardwaj.models.Filter
 import com.bhardwaj.models.Message
 import com.bhardwaj.repository.filter.FilterRepository
@@ -54,18 +53,18 @@ fun Route.filterRoutes() {
         post {
             val filter = call.receive<Filter>()
 
-            validateFilter(this, filter)
-
-            if (filterRepository.insertFilter(filter)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = filter
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Filter Not Created.")
-                )
+            if (validateFilter(this, filter)) {
+                if (filterRepository.insertFilter(filter)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = filter
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Filter Not Created.")
+                    )
+                }
             }
         }
 
@@ -74,21 +73,21 @@ fun Route.filterRoutes() {
             val filter = call.receive<Filter>()
             val isFilterInDb = filterRepository.getFilterById(filter.filterId)
 
-            validateFilter(this, filter)
+            if (validateFilter(this, filter)) {
+                if (isFilterInDb != null) {
+                    val updatedFilter =
+                        filterRepository.updateFilter(filter) ?: Message(message = "Failed to Update.")
 
-            if (isFilterInDb != null) {
-                val updatedFilter =
-                    filterRepository.updateFilter(filter) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedFilter
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Filter ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedFilter
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Filter ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -118,20 +117,25 @@ fun Route.filterRoutes() {
     }
 }
 
-private suspend fun validateFilter(pipelineContext: PipelineContext<Unit, ApplicationCall>, filter: Filter) {
-    when {
-        filter.filterName.isEmpty() -> {
+private suspend fun validateFilter(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    filter: Filter
+): Boolean {
+    return when {
+        filter.filterName.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Filter Name Field is Required."
+                message = Message(message = "Filter Name Field is Required.")
             )
+            false
         }
-
-        filter.filterInCategoryId.isEmpty() -> {
+        filter.filterInCategoryId.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Filter In Category ID Field is Required."
+                message = Message(message = "Filter In Category ID Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

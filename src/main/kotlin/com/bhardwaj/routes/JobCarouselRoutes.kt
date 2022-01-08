@@ -49,18 +49,18 @@ fun Route.jobCarouselRoutes() {
         post {
             val jobCarousel = call.receive<JobCarousel>()
 
-            validateJobCarousel(this, jobCarousel)
-
-            if (jobCarouselRepository.insertJobCarousel(jobCarousel)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = jobCarousel
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Job Carousel Not Created.")
-                )
+            if (validateJobCarousel(this, jobCarousel)) {
+                if (jobCarouselRepository.insertJobCarousel(jobCarousel)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = jobCarousel
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Job Carousel Not Created.")
+                    )
+                }
             }
         }
 
@@ -69,21 +69,21 @@ fun Route.jobCarouselRoutes() {
             val jobCarousel = call.receive<JobCarousel>()
             val isJobCarouselInDb = jobCarouselRepository.getJobCarouselById(jobCarousel.jobCarouselId)
 
-            validateJobCarousel(this, jobCarousel)
+            if (validateJobCarousel(this, jobCarousel)) {
+                if (isJobCarouselInDb != null) {
+                    val updatedJobCarousel =
+                        jobCarouselRepository.updateJobCarousel(jobCarousel) ?: Message(message = "Failed to Update.")
 
-            if (isJobCarouselInDb != null) {
-                val updatedJobCarousel =
-                    jobCarouselRepository.updateJobCarousel(jobCarousel) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedJobCarousel
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Job Carousel ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedJobCarousel
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Job Carousel ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -113,20 +113,25 @@ fun Route.jobCarouselRoutes() {
     }
 }
 
-private suspend fun validateJobCarousel(pipelineContext: PipelineContext<Unit, ApplicationCall>, jobCarousel: JobCarousel) {
-    when {
-        jobCarousel.jobCarouselImage.isEmpty() -> {
+private suspend fun validateJobCarousel(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    jobCarousel: JobCarousel
+): Boolean {
+    return when {
+        jobCarousel.jobCarouselImage.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Job Carousel Image Field is Required."
+                message = Message(message = "Job Carousel Image Field is Required.")
             )
+            false
         }
-
-        jobCarousel.placeInCarousel.isEmpty() -> {
+        jobCarousel.placeInCarousel.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Place In Carousel Field is Required."
+                message = Message(message = "Place In Carousel Field is Required.")
             )
+            false
         }
+        else -> true
     }
 }

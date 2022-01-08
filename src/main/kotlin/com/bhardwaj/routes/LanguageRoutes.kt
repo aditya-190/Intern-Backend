@@ -49,18 +49,18 @@ fun Route.languageRoutes() {
         post {
             val language = call.receive<Language>()
 
-            validateLanguage(this, language)
-
-            if (languageRepository.insertLanguage(language)) {
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = language
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Language Not Created.")
-                )
+            if (validateLanguage(this, language)) {
+                if (languageRepository.insertLanguage(language)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = language
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Language Not Created.")
+                    )
+                }
             }
         }
 
@@ -69,21 +69,21 @@ fun Route.languageRoutes() {
             val language = call.receive<Language>()
             val isLanguageInDb = languageRepository.getLanguageById(language.languageId)
 
-            validateLanguage(this, language)
+            if (validateLanguage(this, language)) {
+                if (isLanguageInDb != null) {
+                    val updatedLanguage =
+                        languageRepository.updateLanguage(language) ?: Message(message = "Failed to Update.")
 
-            if (isLanguageInDb != null) {
-                val updatedLanguage =
-                    languageRepository.updateLanguage(language) ?: Message(message = "Failed to Update.")
-
-                call.respond(
-                    status = HttpStatusCode.OK,
-                    message = updatedLanguage
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Language ID Not Found.")
-                )
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = updatedLanguage
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.NotFound,
+                        message = Message(message = "Language ID Not Found.")
+                    )
+                }
             }
         }
 
@@ -113,20 +113,25 @@ fun Route.languageRoutes() {
     }
 }
 
-private suspend fun validateLanguage(pipelineContext: PipelineContext<Unit, ApplicationCall>, language: Language) {
-    when {
-        language.languageName.isEmpty() -> {
+private suspend fun validateLanguage(
+    pipelineContext: PipelineContext<Unit, ApplicationCall>,
+    language: Language
+): Boolean {
+    return when {
+        language.languageName.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Language Name Field is Required."
+                message = Message(message = "Language Name Field is Required.")
             )
+            false
         }
-
-        language.languageNameInEnglish.isEmpty() -> {
+        language.languageNameInEnglish.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
-                message = "Language name In English Filed is Required."
+                message = Message(message = "Language name In English Filed is Required.")
             )
+            false
         }
+        else -> true
     }
 }

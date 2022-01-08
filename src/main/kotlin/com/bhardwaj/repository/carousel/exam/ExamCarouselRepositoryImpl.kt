@@ -15,6 +15,7 @@ class ExamCarouselRepositoryImpl(
     }
 
     override suspend fun insertExamCarousel(examCarousel: ExamCarousel): Boolean {
+        if (examCarouselTable.countDocuments(filter = ExamCarousel::examCarouselImage eq examCarousel.examCarouselImage) > 0) return false
         return examCarouselTable.insertOne(document = examCarousel).wasAcknowledged()
     }
 

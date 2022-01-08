@@ -15,6 +15,7 @@ class FilterRepositoryImpl(
     }
 
     override suspend fun insertFilter(filter: Filter): Boolean {
+        if (filterTable.countDocuments(filter = Filter::filterName eq filter.filterName) > 0) return false
         return filterTable.insertOne(document = filter).wasAcknowledged()
     }
 

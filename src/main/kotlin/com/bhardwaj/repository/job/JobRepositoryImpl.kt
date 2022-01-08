@@ -15,6 +15,14 @@ class JobRepositoryImpl(
     }
 
     override suspend fun insertJob(job: Job): Boolean {
+        if (jobTable.find(
+                filters = arrayOf(
+                    Job::companyName eq job.companyName,
+                    Job::postTitle eq job.postTitle,
+                    Job::applyNowPage eq job.applyNowPage
+                )
+            ).toList().isNotEmpty()
+        ) return false
         return jobTable.insertOne(document = job).wasAcknowledged()
     }
 

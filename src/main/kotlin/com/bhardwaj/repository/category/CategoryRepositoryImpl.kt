@@ -15,6 +15,7 @@ class CategoryRepositoryImpl(
     }
 
     override suspend fun insertCategory(category: Category): Boolean {
+        if (categoryTable.countDocuments(filter = Category::categoryName eq category.categoryName) > 0) return false
         return categoryTable.insertOne(document = category).wasAcknowledged()
     }
 
