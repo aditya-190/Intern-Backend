@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Route.categoryRoutes() {
@@ -47,6 +48,9 @@ fun Route.categoryRoutes() {
         // Insert a Category.
         post {
             val category = call.receive<Category>()
+
+            validateCategory(this, category)
+
             if (categoryRepository.insertCategory(category)) {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -64,6 +68,8 @@ fun Route.categoryRoutes() {
         put {
             val category = call.receive<Category>()
             val isCategoryInDb = categoryRepository.getCategoryById(category.categoryId)
+
+            validateCategory(this, category)
 
             if (isCategoryInDb != null) {
                 val updatedCategory =
@@ -103,6 +109,17 @@ fun Route.categoryRoutes() {
                     message = Message(message = "Required Category Id.")
                 )
             }
+        }
+    }
+}
+
+private suspend fun validateCategory(pipelineContext: PipelineContext<Unit, ApplicationCall>, category: Category) {
+    when {
+        category.categoryName.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Category Name Field is Required."
+            )
         }
     }
 }

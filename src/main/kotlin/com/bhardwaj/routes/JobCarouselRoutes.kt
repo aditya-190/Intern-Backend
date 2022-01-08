@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Route.jobCarouselRoutes() {
@@ -47,6 +48,9 @@ fun Route.jobCarouselRoutes() {
         // Insert a Job Carousel.
         post {
             val jobCarousel = call.receive<JobCarousel>()
+
+            validateJobCarousel(this, jobCarousel)
+
             if (jobCarouselRepository.insertJobCarousel(jobCarousel)) {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -64,6 +68,8 @@ fun Route.jobCarouselRoutes() {
         put {
             val jobCarousel = call.receive<JobCarousel>()
             val isJobCarouselInDb = jobCarouselRepository.getJobCarouselById(jobCarousel.jobCarouselId)
+
+            validateJobCarousel(this, jobCarousel)
 
             if (isJobCarouselInDb != null) {
                 val updatedJobCarousel =
@@ -103,6 +109,24 @@ fun Route.jobCarouselRoutes() {
                     message = Message(message = "Required Job Carousel Id.")
                 )
             }
+        }
+    }
+}
+
+private suspend fun validateJobCarousel(pipelineContext: PipelineContext<Unit, ApplicationCall>, jobCarousel: JobCarousel) {
+    when {
+        jobCarousel.jobCarouselImage.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Job Carousel Image Field is Required."
+            )
+        }
+
+        jobCarousel.placeInCarousel.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Place In Carousel Field is Required."
+            )
         }
     }
 }

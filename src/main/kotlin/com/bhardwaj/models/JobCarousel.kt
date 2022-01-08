@@ -8,6 +8,6 @@ import org.bson.types.ObjectId
 data class JobCarousel(
     @BsonId
     val jobCarouselId: String = ObjectId().toString(),
-    val jobCarouselImage: String? = null,
-    val placeInCarousel: String? = null
+    val jobCarouselImage: String,
+    val placeInCarousel: String
 )

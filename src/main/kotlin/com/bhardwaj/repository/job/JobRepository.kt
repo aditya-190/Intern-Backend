@@ -6,7 +6,6 @@ interface JobRepository {
     // For Admin
     suspend fun getJobById(jobId: String): Job?
     suspend fun insertJob(job: Job): Boolean
-    suspend fun insertMultipleJobs(jobs: List<Job>): Boolean
     suspend fun updateJob(job: Job): Job?
     suspend fun deleteJob(jobId: String): Boolean
 

@@ -9,6 +9,6 @@ data class Filter(
     @BsonId
     val filterId: String = ObjectId().toString(),
     val filterInCategoryId: String,
-    val filterName: String? = null,
-    val lastUpdated: Long? = null
+    val filterName: String,
+    val lastUpdated: Long
 )

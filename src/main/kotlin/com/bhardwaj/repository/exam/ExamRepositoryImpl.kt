@@ -18,10 +18,6 @@ class ExamRepositoryImpl(
         return examTable.insertOne(document = exam).wasAcknowledged()
     }
 
-    override suspend fun insertMultipleExams(exams: List<Exam>): Boolean {
-        return examTable.insertMany(documents = exams).wasAcknowledged()
-    }
-
     override suspend fun updateExam(exam: Exam): Exam? {
         examTable.updateOne(filter = Exam::postId eq exam.postId, target = exam)
         return examTable.findOne(filter = Exam::postId eq exam.postId)

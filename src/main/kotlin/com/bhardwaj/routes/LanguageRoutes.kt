@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Route.languageRoutes() {
@@ -47,6 +48,9 @@ fun Route.languageRoutes() {
         // Insert a Language.
         post {
             val language = call.receive<Language>()
+
+            validateLanguage(this, language)
+
             if (languageRepository.insertLanguage(language)) {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -64,6 +68,8 @@ fun Route.languageRoutes() {
         put {
             val language = call.receive<Language>()
             val isLanguageInDb = languageRepository.getLanguageById(language.languageId)
+
+            validateLanguage(this, language)
 
             if (isLanguageInDb != null) {
                 val updatedLanguage =
@@ -103,6 +109,24 @@ fun Route.languageRoutes() {
                     message = Message(message = "Required Language Id.")
                 )
             }
+        }
+    }
+}
+
+private suspend fun validateLanguage(pipelineContext: PipelineContext<Unit, ApplicationCall>, language: Language) {
+    when {
+        language.languageName.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Language Name Field is Required."
+            )
+        }
+
+        language.languageNameInEnglish.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Language name In English Filed is Required."
+            )
         }
     }
 }

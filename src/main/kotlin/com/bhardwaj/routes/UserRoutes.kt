@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Route.userRoutes() {
@@ -56,6 +57,9 @@ fun Route.userRoutes() {
         // Insert an User.
         post {
             val user = call.receive<User>()
+
+            validateUser(this, user)
+
             if (userRepository.insertUser(user)) {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -72,6 +76,9 @@ fun Route.userRoutes() {
         // Update the User
         put {
             val user = call.receive<User>()
+
+            validateUser(this, user)
+
             val isUserInDb = userRepository.getUserById(user.userId)
 
             if (isUserInDb != null) {
@@ -112,6 +119,31 @@ fun Route.userRoutes() {
                     message = Message(message = "Required User Id.")
                 )
             }
+        }
+    }
+}
+
+private suspend fun validateUser(pipelineContext: PipelineContext<Unit, ApplicationCall>, user: User) {
+    when {
+        user.name.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "User Name Field is Required."
+            )
+        }
+
+        user.email.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Email Field is Required."
+            )
+        }
+
+        user.password.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Password Field is Required."
+            )
         }
     }
 }

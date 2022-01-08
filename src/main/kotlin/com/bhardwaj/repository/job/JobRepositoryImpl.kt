@@ -18,10 +18,6 @@ class JobRepositoryImpl(
         return jobTable.insertOne(document = job).wasAcknowledged()
     }
 
-    override suspend fun insertMultipleJobs(jobs: List<Job>): Boolean {
-        return jobTable.insertMany(documents = jobs).wasAcknowledged()
-    }
-
     override suspend fun updateJob(job: Job): Job? {
         jobTable.updateOne(filter = Job::postId eq job.postId, target = job)
         return jobTable.findOne(filter = Job::postId eq job.postId)

@@ -8,6 +8,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Route.examCarouselRoutes() {
@@ -47,6 +48,9 @@ fun Route.examCarouselRoutes() {
         // Insert a Exam Carousel.
         post {
             val examCarousel = call.receive<ExamCarousel>()
+
+            validateExamCarousel(this, examCarousel)
+
             if (examCarouselRepository.insertExamCarousel(examCarousel)) {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -63,6 +67,9 @@ fun Route.examCarouselRoutes() {
         // Update the Exam Carousel.
         put {
             val examCarousel = call.receive<ExamCarousel>()
+
+            validateExamCarousel(this, examCarousel)
+
             val isExamCarouselInDb = examCarouselRepository.getExamCarouselById(examCarousel.examCarouselId)
 
             if (isExamCarouselInDb != null) {
@@ -103,6 +110,24 @@ fun Route.examCarouselRoutes() {
                     message = Message(message = "Required Exam Carousel Id.")
                 )
             }
+        }
+    }
+}
+
+private suspend fun validateExamCarousel(pipelineContext: PipelineContext<Unit, ApplicationCall>, examCarousel: ExamCarousel) {
+    when {
+        examCarousel.examCarouselImage.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Exam Carousel Image Field is Required."
+            )
+        }
+
+        examCarousel.placeInCarousel.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Place In Carousel Field is Required."
+            )
         }
     }
 }

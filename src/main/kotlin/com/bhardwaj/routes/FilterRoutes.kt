@@ -1,5 +1,6 @@
 package com.bhardwaj.routes
 
+import com.bhardwaj.models.Category
 import com.bhardwaj.models.Filter
 import com.bhardwaj.models.Message
 import com.bhardwaj.repository.filter.FilterRepository
@@ -8,6 +9,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
 
 fun Route.filterRoutes() {
@@ -51,6 +53,9 @@ fun Route.filterRoutes() {
         // Insert a Filter.
         post {
             val filter = call.receive<Filter>()
+
+            validateFilter(this, filter)
+
             if (filterRepository.insertFilter(filter)) {
                 call.respond(
                     status = HttpStatusCode.OK,
@@ -68,6 +73,8 @@ fun Route.filterRoutes() {
         put {
             val filter = call.receive<Filter>()
             val isFilterInDb = filterRepository.getFilterById(filter.filterId)
+
+            validateFilter(this, filter)
 
             if (isFilterInDb != null) {
                 val updatedFilter =
@@ -107,6 +114,24 @@ fun Route.filterRoutes() {
                     message = Message(message = "Required Filter Id.")
                 )
             }
+        }
+    }
+}
+
+private suspend fun validateFilter(pipelineContext: PipelineContext<Unit, ApplicationCall>, filter: Filter) {
+    when {
+        filter.filterName.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Filter Name Field is Required."
+            )
+        }
+
+        filter.filterInCategoryId.isEmpty() -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = "Filter In Category ID Field is Required."
+            )
         }
     }
 }

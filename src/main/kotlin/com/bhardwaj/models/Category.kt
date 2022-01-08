@@ -8,6 +8,6 @@ import org.bson.types.ObjectId
 data class Category(
     @BsonId
     val categoryId: String = ObjectId().toString(),
-    val categoryName: String? = null,
-    val lastUpdated: Long? = null
+    val categoryName: String,
+    val lastUpdated: Long
 )
