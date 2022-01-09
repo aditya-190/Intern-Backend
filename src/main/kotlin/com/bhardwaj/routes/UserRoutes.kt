@@ -2,9 +2,11 @@ package com.bhardwaj.routes
 
 import com.bhardwaj.models.Message
 import com.bhardwaj.models.User
-import com.bhardwaj.models.UserCredentials
 import com.bhardwaj.repository.user.UserRepository
+import com.bhardwaj.utils.TokenManager
+import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
+import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -14,6 +16,7 @@ import org.mindrot.jbcrypt.BCrypt
 
 fun Route.userRoutes() {
     val userRepository: UserRepository by inject()
+    val tokenManager = TokenManager(HoconApplicationConfig(ConfigFactory.load()))
 
     route("/user") {
 
@@ -52,7 +55,7 @@ fun Route.userRoutes() {
 
         // Login User
         post("/login") {
-            val response = call.receive<UserCredentials>()
+            val response = call.receive<User>()
 
             if (!response.validateUserWithoutName()) {
                 call.respond(
@@ -65,8 +68,8 @@ fun Route.userRoutes() {
             val email = response.email.trim()
             val password = response.password.trim()
 
-            val userCredentials = userRepository.getUserCredentialsByEmailId(emailId = email)
-            if (userCredentials == null) {
+            val user = userRepository.getUserByEmailId(emailId = email)
+            if (user == null) {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
                     message = Message(message = "Invalid UserName and Password.")
@@ -74,20 +77,11 @@ fun Route.userRoutes() {
                 return@post
             }
 
-            val doesPasswordMatch = BCrypt.checkpw(password, userCredentials.password)
+            val doesPasswordMatch = BCrypt.checkpw(password, user.password)
             if (!doesPasswordMatch) {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
                     message = Message(message = "Invalid UserName and Password.")
-                )
-                return@post
-            }
-
-            val user = userRepository.getUserCredentialsByEmailId(emailId = email)
-            if (user == null) {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "Something Went Wrong.")
                 )
                 return@post
             }
@@ -100,7 +94,7 @@ fun Route.userRoutes() {
 
         // Register User.
         post {
-            val response = call.receive<UserCredentials>()
+            val response = call.receive<User>()
 
             if (!response.validateUser()) {
                 call.respond(
@@ -110,38 +104,18 @@ fun Route.userRoutes() {
                 return@post
             }
 
-            val userCredentials = UserCredentials(
-                tokenId = response.tokenId,
-                fcmTokenId = response.fcmTokenId,
+            val user = response.copy(
+                tokenId = tokenManager.generateToken(response),
                 name = response.name?.trim(),
                 email = response.email.trim(),
                 password = response.hashedPassword()
             )
 
-            if (userRepository.insertUserCredentials(userCredentials)) {
-                val user = User(
-                    userId = userCredentials.id,
-                    userImage = null,
-                    name = userCredentials.name?.trim(),
-                    email = userCredentials.email,
-                    languagePreference = null,
-                    pushNotificationOn = true,
-                    lastLoginTime = System.currentTimeMillis(),
-                    categoryList = listOf()
+            if (userRepository.insertUser(user)) {
+                call.respond(
+                    status = HttpStatusCode.OK,
+                    message = user
                 )
-
-                if (userRepository.insertUser(user)) {
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = user
-                    )
-                } else {
-                    userRepository.deleteUser(userId = user.userId)
-                    call.respond(
-                        status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Registration Failed.")
-                    )
-                }
             } else {
                 call.respond(
                     status = HttpStatusCode.BadRequest,
@@ -178,25 +152,16 @@ fun Route.userRoutes() {
         delete {
             val userId = call.request.queryParameters["userId"]
 
-            println("Aditya Here")
-
             if (!userId.isNullOrEmpty()) {
                 if (userRepository.deleteUser(userId)) {
-                    if (userRepository.deleteUserCredentials(id = userId)) {
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = Message(message = "User Deleted Successfully.")
-                        )
-                    } else {
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = Message(message = "Something Went Wrong.")
-                        )
-                    }
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "User Deleted Successfully.")
+                    )
                 } else {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
-                        message = Message(message = "Failed to Delete.")
+                        message = Message(message = "Something Went Wrong.")
                     )
                 }
             } else {
