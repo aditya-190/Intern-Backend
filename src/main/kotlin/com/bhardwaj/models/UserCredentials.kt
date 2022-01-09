@@ -16,6 +16,33 @@ data class UserCredentials(
     val password: String,
 ) {
     fun hashedPassword(): String {
-        return BCrypt.hashpw(password, BCrypt.gensalt())
+        return BCrypt.hashpw(password.trim(), BCrypt.gensalt())
+    }
+
+    fun validateUser(): Boolean {
+        val regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
+        val regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
+
+        return when {
+            name.isNullOrEmpty() -> false
+            email.isEmpty() -> false
+            !email.matches(regex = Regex(regexEmail)) -> false
+            password.isEmpty() -> false
+            !password.matches(regex = Regex(regexPassword)) -> false
+            else -> true
+        }
+    }
+
+    fun validateUserWithoutName(): Boolean {
+        val regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
+        val regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
+
+        return when {
+            email.isEmpty() -> false
+            !email.matches(regex = Regex(regexEmail)) -> false
+            password.isEmpty() -> false
+            !password.matches(regex = Regex(regexPassword)) -> false
+            else -> true
+        }
     }
 }

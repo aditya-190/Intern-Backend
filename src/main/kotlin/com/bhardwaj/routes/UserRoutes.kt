@@ -2,14 +2,15 @@ package com.bhardwaj.routes
 
 import com.bhardwaj.models.Message
 import com.bhardwaj.models.User
+import com.bhardwaj.models.UserCredentials
 import com.bhardwaj.repository.user.UserRepository
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.pipeline.*
 import org.koin.ktor.ext.inject
+import org.mindrot.jbcrypt.BCrypt
 
 fun Route.userRoutes() {
     val userRepository: UserRepository by inject()
@@ -28,7 +29,6 @@ fun Route.userRoutes() {
         // Get User By User Id, Token Id or Email.
         get {
             val userId = call.request.queryParameters["userId"]
-            val tokenId = call.request.queryParameters["tokenId"]
             val email = call.request.queryParameters["email"]
 
             val response = when {
@@ -36,16 +36,12 @@ fun Route.userRoutes() {
                     val user = userRepository.getUserById(userId = userId)
                     user ?: Message(message = "Required User Id Not Found.")
                 }
-                !tokenId.isNullOrEmpty() -> {
-                    val user = userRepository.getUserByTokenId(tokenId = tokenId)
-                    user ?: Message(message = "Required Token Id Not Found.")
-                }
                 !email.isNullOrEmpty() -> {
                     val user = userRepository.getUserByEmailId(emailId = email)
                     user ?: Message(message = "Required Email Id Not Found.")
                 }
                 else -> {
-                    Message(message = "No ID Provided")
+                    Message(message = "ID Not Provided")
                 }
             }
             call.respond(
@@ -54,49 +50,127 @@ fun Route.userRoutes() {
             )
         }
 
-        // Insert an User.
-        post {
-            val user = call.receive<User>()
+        // Login User
+        post("/login") {
+            val response = call.receive<UserCredentials>()
 
-            if (validateUser(this, user)) {
+            if (!response.validateUserWithoutName()) {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = Message(message = "Required Fields.")
+                )
+                return@post
+            }
+
+            val email = response.email.trim()
+            val password = response.password.trim()
+
+            val userCredentials = userRepository.getUserCredentialsByEmailId(emailId = email)
+            if (userCredentials == null) {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = Message(message = "Invalid UserName and Password.")
+                )
+                return@post
+            }
+
+            val doesPasswordMatch = BCrypt.checkpw(password, userCredentials.password)
+            if (!doesPasswordMatch) {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = Message(message = "Invalid UserName and Password.")
+                )
+                return@post
+            }
+
+            val user = userRepository.getUserCredentialsByEmailId(emailId = email)
+            if (user == null) {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = Message(message = "Something Went Wrong.")
+                )
+                return@post
+            }
+
+            call.respond(
+                status = HttpStatusCode.OK,
+                message = user
+            )
+        }
+
+        // Register User.
+        post {
+            val response = call.receive<UserCredentials>()
+
+            if (!response.validateUser()) {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = Message(message = "Required Fields.")
+                )
+                return@post
+            }
+
+            val userCredentials = UserCredentials(
+                tokenId = response.tokenId,
+                fcmTokenId = response.fcmTokenId,
+                name = response.name?.trim(),
+                email = response.email.trim(),
+                password = response.hashedPassword()
+            )
+
+            if (userRepository.insertUserCredentials(userCredentials)) {
+                val user = User(
+                    userId = userCredentials.id,
+                    userImage = null,
+                    name = userCredentials.name?.trim(),
+                    email = userCredentials.email,
+                    languagePreference = null,
+                    pushNotificationOn = true,
+                    lastLoginTime = System.currentTimeMillis(),
+                    categoryList = listOf()
+                )
+
                 if (userRepository.insertUser(user)) {
                     call.respond(
                         status = HttpStatusCode.OK,
                         message = user
                     )
                 } else {
+                    userRepository.deleteUser(userId = user.userId)
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "User Already Exists.")
+                        message = Message(message = "Registration Failed.")
                     )
                 }
+            } else {
+                call.respond(
+                    status = HttpStatusCode.BadRequest,
+                    message = Message(message = "User Already Exists.")
+                )
             }
         }
 
         // Update the User
         put {
             val user = call.receive<User>()
-
-            if (validateUser(this, user)) {
-                val isUserInDb = userRepository.getUserById(user.userId.toString())
-                if (isUserInDb != null) {
-                    if (userRepository.updateUser(user)) {
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = user
-                        )
-                    } else {
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = Message(message = "User Already Exist.")
-                        )
-                    }
+            val isUserInDb = userRepository.getUserById(user.userId)
+            if (isUserInDb != null) {
+                if (userRepository.updateUser(user)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = user
+                    )
                 } else {
                     call.respond(
-                        status = HttpStatusCode.NotFound,
-                        message = Message(message = "User ID Not Found.")
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "User Already Exist.")
                     )
                 }
+            } else {
+                call.respond(
+                    status = HttpStatusCode.NotFound,
+                    message = Message(message = "User ID Not Found.")
+                )
             }
         }
 
@@ -104,12 +178,21 @@ fun Route.userRoutes() {
         delete {
             val userId = call.request.queryParameters["userId"]
 
+            println("Aditya Here")
+
             if (!userId.isNullOrEmpty()) {
                 if (userRepository.deleteUser(userId)) {
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = Message(message = "User Deleted Successfully.")
-                    )
+                    if (userRepository.deleteUserCredentials(id = userId)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "User Deleted Successfully.")
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Something Went Wrong.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.InternalServerError,
@@ -123,52 +206,5 @@ fun Route.userRoutes() {
                 )
             }
         }
-    }
-}
-
-private suspend fun validateUser(
-    pipelineContext: PipelineContext<Unit, ApplicationCall>,
-    user: User
-): Boolean {
-    val regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
-    val regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
-
-    return when {
-        user.name.isNullOrEmpty() -> {
-            pipelineContext.call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Message(message = "User Name Field is Required.")
-            )
-            false
-        }
-        user.email.isNullOrEmpty() -> {
-            pipelineContext.call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Message(message = "Email Field is Required.")
-            )
-            false
-        }
-        !user.email.matches(regex = Regex(regexEmail)) -> {
-            pipelineContext.call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Message(message = "Specify Correct Email.")
-            )
-            false
-        }
-        user.password.isNullOrEmpty() -> {
-            pipelineContext.call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Message(message = "Password Field is Required.")
-            )
-            false
-        }
-        !user.password.matches(regex = Regex(regexPassword)) -> {
-            pipelineContext.call.respond(
-                status = HttpStatusCode.BadRequest,
-                message = Message(message = "Specify Correct Password.")
-            )
-            false
-        }
-        else -> true
     }
 }
