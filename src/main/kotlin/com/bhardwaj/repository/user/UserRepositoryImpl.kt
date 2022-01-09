@@ -32,7 +32,10 @@ class UserRepositoryImpl(
     }
 
     override suspend fun updateUser(user: User): Boolean {
-        if (userTable.countDocuments(filter = User::email eq user.email) > 0) return false
-        return userTable.updateOne(filter = User::userId eq user.userId, target = user).wasAcknowledged()
+        return userTable.updateOne(
+            filter = User::userId eq user.userId,
+            target = user,
+            updateOnlyNotNullProperties = true
+        ).wasAcknowledged()
     }
 }

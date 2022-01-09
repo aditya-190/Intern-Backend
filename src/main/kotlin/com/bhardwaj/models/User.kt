@@ -13,37 +13,37 @@ data class User(
     val fcmTokenId: String? = null,
     val userImage: String? = null,
     val name: String? = null,
-    val email: String,
-    val password: String,
+    val email: String? = null,
+    val password: String? = null,
     val languagePreference: Language? = null,
     val pushNotificationOn: Boolean = true,
     val lastLoginTime: Long? = null,
     val categoryList: List<Category>? = null
 ) {
-    fun hashedPassword(): String = BCrypt.hashpw(password.trim(), BCrypt.gensalt())
+    fun hashedPassword(): String = BCrypt.hashpw(password.toString().trim(), BCrypt.gensalt())
 
     fun validateUser(): Boolean {
-        val regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
+        val regexEmail = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
         val regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
 
         return when {
             name.isNullOrEmpty() -> false
-            email.isEmpty() -> false
+            email.isNullOrEmpty() -> false
             !email.matches(regex = Regex(regexEmail)) -> false
-            password.isEmpty() -> false
+            password.isNullOrEmpty() -> false
             !password.matches(regex = Regex(regexPassword)) -> false
             else -> true
         }
     }
 
     fun validateUserWithoutName(): Boolean {
-        val regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
+        val regexEmail = "^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
         val regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
 
         return when {
-            email.isEmpty() -> false
+            email.isNullOrEmpty() -> false
             !email.matches(regex = Regex(regexEmail)) -> false
-            password.isEmpty() -> false
+            password.isNullOrEmpty() -> false
             !password.matches(regex = Regex(regexPassword)) -> false
             else -> true
         }

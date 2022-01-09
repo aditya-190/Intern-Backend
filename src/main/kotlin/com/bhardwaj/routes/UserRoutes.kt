@@ -31,7 +31,7 @@ fun Route.userRoutes() {
                 )
             }
 
-            // Get User By User Id, Token Id or Email.
+            // Get User By User Id or Email.
             get {
                 val userId = call.request.queryParameters["userId"]
                 val email = call.request.queryParameters["email"]
@@ -67,8 +67,8 @@ fun Route.userRoutes() {
                     return@post
                 }
 
-                val email = response.email.trim()
-                val password = response.password.trim()
+                val email = response.email.toString().trim()
+                val password = response.password.toString().trim()
 
                 val user = userRepository.getUserByEmailId(emailId = email)
                 if (user == null) {
@@ -96,26 +96,47 @@ fun Route.userRoutes() {
 
             // Update the User
             put {
-                val user = call.receive<User>()
-                val isUserInDb = userRepository.getUserById(user.userId)
-                if (isUserInDb != null) {
-                    if (userRepository.updateUser(user)) {
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = user
-                        )
-                    } else {
-                        call.respond(
-                            status = HttpStatusCode.OK,
-                            message = Message(message = "User Already Exist.")
-                        )
-                    }
-                } else {
+                val response = call.receive<User>()
+                val isUserInDb = userRepository.getUserById(response.userId)
+
+                val user = response.copy(password = response.hashedPassword())
+
+                if (isUserInDb == null) {
                     call.respond(
                         status = HttpStatusCode.NotFound,
                         message = Message(message = "User ID Not Found.")
                     )
+                    return@put
                 }
+                if (!user.email.isNullOrEmpty()) {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Email Field Cannot Be Modified.")
+                    )
+                    return@put
+                }
+
+                if (!userRepository.updateUser(user)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "Something Went Wrong.")
+                    )
+                    return@put
+                }
+
+                val result = userRepository.getUserById(user.userId)
+                if (result == null) {
+                    call.respond(
+                        status = HttpStatusCode.InternalServerError,
+                        message = Message(message = "Something Went Wrong.")
+                    )
+                    return@put
+                }
+
+                call.respond(
+                    status = HttpStatusCode.OK,
+                    message = result
+                )
             }
 
             // Delete an user.
@@ -157,8 +178,8 @@ fun Route.userRoutes() {
 
             val user = response.copy(
                 tokenId = tokenManager.generateToken(response),
-                name = response.name?.trim(),
-                email = response.email.trim(),
+                name = response.name.toString().trim(),
+                email = response.email.toString().trim(),
                 password = response.hashedPassword()
             )
 
