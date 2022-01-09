@@ -3,6 +3,7 @@ val kotlinVersion: String by project
 val logbackVersion: String by project
 val koinVersion: String by project
 val kmongoVersion: String by project
+val jbCryptVersion: String by project
 
 plugins {
     application
@@ -34,6 +35,7 @@ dependencies {
     // For Authentication
     implementation("io.ktor:ktor-auth:$ktorVersion")
     implementation("io.ktor:ktor-auth-jwt:$ktorVersion")
+    implementation("org.mindrot:jbcrypt:$jbCryptVersion")
 
     // For Dependency Injection
     implementation("io.insert-koin:koin-ktor:$koinVersion")

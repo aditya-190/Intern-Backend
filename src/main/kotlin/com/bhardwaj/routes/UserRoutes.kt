@@ -78,7 +78,7 @@ fun Route.userRoutes() {
             val user = call.receive<User>()
 
             if (validateUser(this, user)) {
-                val isUserInDb = userRepository.getUserById(user.userId)
+                val isUserInDb = userRepository.getUserById(user.userId.toString())
                 if (isUserInDb != null) {
                     if (userRepository.updateUser(user)) {
                         call.respond(
@@ -130,6 +130,9 @@ private suspend fun validateUser(
     pipelineContext: PipelineContext<Unit, ApplicationCall>,
     user: User
 ): Boolean {
+    val regexEmail = "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}\$"
+    val regexPassword = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&])[A-Za-z\\d@\$!%*?&]{8,}\$"
+
     return when {
         user.name.isNullOrEmpty() -> {
             pipelineContext.call.respond(
@@ -145,10 +148,24 @@ private suspend fun validateUser(
             )
             false
         }
+        !user.email.matches(regex = Regex(regexEmail)) -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = Message(message = "Specify Correct Email.")
+            )
+            false
+        }
         user.password.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = Message(message = "Password Field is Required.")
+            )
+            false
+        }
+        !user.password.matches(regex = Regex(regexPassword)) -> {
+            pipelineContext.call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = Message(message = "Specify Correct Password.")
             )
             false
         }

@@ -25,7 +25,8 @@ class LanguageRepositoryImpl(
 
     override suspend fun updateLanguage(language: Language): Boolean {
         if (languageTable.countDocuments(filter = Language::languageNameInEnglish eq language.languageNameInEnglish) > 0) return false
-        return languageTable.updateOne(filter = Language::languageId eq language.languageId, target = language).wasAcknowledged()
+        return languageTable.updateOne(filter = Language::languageId eq language.languageId, target = language)
+            .wasAcknowledged()
     }
 
     override suspend fun getAllLanguage(): List<Language> {

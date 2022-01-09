@@ -25,7 +25,8 @@ class CategoryRepositoryImpl(
 
     override suspend fun updateCategory(category: Category): Boolean {
         if (categoryTable.countDocuments(filter = Category::categoryName eq category.categoryName) > 0) return false
-        return categoryTable.updateOne(filter = Category::categoryId eq category.categoryId, target = category).wasAcknowledged()
+        return categoryTable.updateOne(filter = Category::categoryId eq category.categoryId, target = category)
+            .wasAcknowledged()
     }
 
     override suspend fun getAllCategory(): List<Category> {
