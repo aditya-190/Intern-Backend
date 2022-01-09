@@ -4,6 +4,7 @@ import com.bhardwaj.models.Exam
 import com.bhardwaj.models.Message
 import com.bhardwaj.repository.exam.ExamRepository
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -14,104 +15,106 @@ import org.koin.ktor.ext.inject
 fun Route.examRoutes() {
     val examRepository: ExamRepository by inject()
 
-    route("/exam") {
+    authenticate {
+        route("/exam") {
 
-        // Get All Exams.
-        get("/all") {
-            val exams = examRepository.getNewExams()
-            call.respond(
-                status = HttpStatusCode.OK,
-                message = exams
-            )
-        }
-
-        // Get Exam By Exam ID.
-        get {
-            val examId = call.request.queryParameters["examId"]
-
-            if (!examId.isNullOrEmpty()) {
-                val exam = examRepository.getExamById(examId = examId)
-                val response = exam ?: Message(message = "Required Exam Id Not Found.")
-
+            // Get All Exams.
+            get("/all") {
+                val exams = examRepository.getNewExams()
                 call.respond(
                     status = HttpStatusCode.OK,
-                    message = response
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "No ID Provided.")
+                    message = exams
                 )
             }
-        }
 
-        // Insert an Exam.
-        post {
-            val exam = call.receive<Exam>()
+            // Get Exam By Exam ID.
+            get {
+                val examId = call.request.queryParameters["examId"]
 
-            if (validateExam(this, exam)) {
-                if (examRepository.insertExam(exam)) {
+                if (!examId.isNullOrEmpty()) {
+                    val exam = examRepository.getExamById(examId = examId)
+                    val response = exam ?: Message(message = "Required Exam Id Not Found.")
+
                     call.respond(
                         status = HttpStatusCode.OK,
-                        message = exam
+                        message = response
                     )
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Exam Already Exists.")
+                        message = Message(message = "No ID Provided.")
                     )
                 }
             }
-        }
 
-        // Update the Exam.
-        put {
-            val exam = call.receive<Exam>()
-            val isExamInDb = examRepository.getExamById(exam.postId)
+            // Insert an Exam.
+            post {
+                val exam = call.receive<Exam>()
 
-            if (validateExam(this, exam)) {
-                if (isExamInDb != null) {
-                    if (examRepository.updateExam(exam)) {
+                if (validateExam(this, exam)) {
+                    if (examRepository.insertExam(exam)) {
                         call.respond(
                             status = HttpStatusCode.OK,
                             message = exam
                         )
                     } else {
                         call.respond(
-                            status = HttpStatusCode.OK,
+                            status = HttpStatusCode.BadRequest,
                             message = Message(message = "Exam Already Exists.")
+                        )
+                    }
+                }
+            }
+
+            // Update the Exam.
+            put {
+                val exam = call.receive<Exam>()
+                val isExamInDb = examRepository.getExamById(exam.postId)
+
+                if (validateExam(this, exam)) {
+                    if (isExamInDb != null) {
+                        if (examRepository.updateExam(exam)) {
+                            call.respond(
+                                status = HttpStatusCode.OK,
+                                message = exam
+                            )
+                        } else {
+                            call.respond(
+                                status = HttpStatusCode.OK,
+                                message = Message(message = "Exam Already Exists.")
+                            )
+                        }
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.NotFound,
+                            message = Message(message = "Exam ID Not Found.")
+                        )
+                    }
+                }
+            }
+
+            // Delete an exam.
+            delete {
+                val examId = call.request.queryParameters["examId"]
+
+                if (!examId.isNullOrEmpty()) {
+                    if (examRepository.deleteExam(examId)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Exam Deleted Successfully.")
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.InternalServerError,
+                            message = Message(message = "Failed to Delete.")
                         )
                     }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,
-                        message = Message(message = "Exam ID Not Found.")
+                        message = Message(message = "Required Exam Id.")
                     )
                 }
-            }
-        }
-
-        // Delete an exam.
-        delete {
-            val examId = call.request.queryParameters["examId"]
-
-            if (!examId.isNullOrEmpty()) {
-                if (examRepository.deleteExam(examId)) {
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = Message(message = "Exam Deleted Successfully.")
-                    )
-                } else {
-                    call.respond(
-                        status = HttpStatusCode.InternalServerError,
-                        message = Message(message = "Failed to Delete.")
-                    )
-                }
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Required Exam Id.")
-                )
             }
         }
     }

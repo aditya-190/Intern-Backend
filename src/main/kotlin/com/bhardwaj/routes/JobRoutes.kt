@@ -4,6 +4,7 @@ import com.bhardwaj.models.Job
 import com.bhardwaj.models.Message
 import com.bhardwaj.repository.job.JobRepository
 import io.ktor.application.*
+import io.ktor.auth.*
 import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -14,104 +15,106 @@ import org.koin.ktor.ext.inject
 fun Route.jobRoutes() {
     val jobRepository: JobRepository by inject()
 
-    route("/job") {
+    authenticate {
+        route("/job") {
 
-        // Get All Jobs.
-        get("/all") {
-            val jobs = jobRepository.getNewJobs()
-            call.respond(
-                status = HttpStatusCode.OK,
-                message = jobs
-            )
-        }
-
-        // Get Job By Job ID.
-        get {
-            val jobId = call.request.queryParameters["jobId"]
-
-            if (!jobId.isNullOrEmpty()) {
-                val job = jobRepository.getJobById(jobId = jobId)
-                val response = job ?: Message(message = "Required Job Id Not Found.")
-
+            // Get All Jobs.
+            get("/all") {
+                val jobs = jobRepository.getNewJobs()
                 call.respond(
                     status = HttpStatusCode.OK,
-                    message = response
-                )
-            } else {
-                call.respond(
-                    status = HttpStatusCode.BadRequest,
-                    message = Message(message = "No ID Provided.")
+                    message = jobs
                 )
             }
-        }
 
-        // Insert a Job.
-        post {
-            val job = call.receive<Job>()
+            // Get Job By Job ID.
+            get {
+                val jobId = call.request.queryParameters["jobId"]
 
-            if (validateJob(this, job)) {
-                if (jobRepository.insertJob(job)) {
+                if (!jobId.isNullOrEmpty()) {
+                    val job = jobRepository.getJobById(jobId = jobId)
+                    val response = job ?: Message(message = "Required Job Id Not Found.")
+
                     call.respond(
                         status = HttpStatusCode.OK,
-                        message = job
+                        message = response
                     )
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Job Already Created.")
+                        message = Message(message = "No ID Provided.")
                     )
                 }
             }
-        }
 
-        // Update the Job.
-        put {
-            val job = call.receive<Job>()
-            val isJobInDb = jobRepository.getJobById(job.postId)
+            // Insert a Job.
+            post {
+                val job = call.receive<Job>()
 
-            if (validateJob(this, job)) {
-                if (isJobInDb != null) {
-                    if (jobRepository.updateJob(job)) {
+                if (validateJob(this, job)) {
+                    if (jobRepository.insertJob(job)) {
                         call.respond(
                             status = HttpStatusCode.OK,
                             message = job
                         )
                     } else {
                         call.respond(
+                            status = HttpStatusCode.BadRequest,
+                            message = Message(message = "Job Already Created.")
+                        )
+                    }
+                }
+            }
+
+            // Update the Job.
+            put {
+                val job = call.receive<Job>()
+                val isJobInDb = jobRepository.getJobById(job.postId)
+
+                if (validateJob(this, job)) {
+                    if (isJobInDb != null) {
+                        if (jobRepository.updateJob(job)) {
+                            call.respond(
+                                status = HttpStatusCode.OK,
+                                message = job
+                            )
+                        } else {
+                            call.respond(
+                                status = HttpStatusCode.OK,
+                                message = Message(message = "Job Already Exist.")
+                            )
+                        }
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.NotFound,
+                            message = Message(message = "Job ID Not Found.")
+                        )
+                    }
+                }
+            }
+
+            // Delete a job.
+            delete {
+                val jobId = call.request.queryParameters["jobId"]
+
+                if (!jobId.isNullOrEmpty()) {
+                    if (jobRepository.deleteJob(jobId)) {
+                        call.respond(
                             status = HttpStatusCode.OK,
-                            message = Message(message = "Job Already Exist.")
+                            message = Message(message = "Job Deleted Successfully.")
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.InternalServerError,
+                            message = Message(message = "Failed to Delete.")
                         )
                     }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,
-                        message = Message(message = "Job ID Not Found.")
+                        message = Message(message = "Required Job Id.")
                     )
                 }
-            }
-        }
-
-        // Delete a job.
-        delete {
-            val jobId = call.request.queryParameters["jobId"]
-
-            if (!jobId.isNullOrEmpty()) {
-                if (jobRepository.deleteJob(jobId)) {
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = Message(message = "Job Deleted Successfully.")
-                    )
-                } else {
-                    call.respond(
-                        status = HttpStatusCode.InternalServerError,
-                        message = Message(message = "Failed to Delete.")
-                    )
-                }
-            } else {
-                call.respond(
-                    status = HttpStatusCode.NotFound,
-                    message = Message(message = "Required Job Id.")
-                )
             }
         }
     }
