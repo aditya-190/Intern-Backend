@@ -19,9 +19,9 @@ class FilterRepositoryImpl(
         return filterTable.insertOne(document = filter).wasAcknowledged()
     }
 
-    override suspend fun updateFilter(filter: Filter): Filter? {
-        filterTable.updateOne(filter = Filter::filterId eq filter.filterId, target = filter)
-        return filterTable.findOne(filter = Filter::filterId eq filter.filterId)
+    override suspend fun updateFilter(filter: Filter): Boolean {
+        if (filterTable.countDocuments(filter = Filter::filterName eq filter.filterName) > 0) return false
+        return filterTable.updateOne(filter = Filter::filterId eq filter.filterId, target = filter).wasAcknowledged()
     }
 
     override suspend fun deleteFilter(filterId: String): Boolean {

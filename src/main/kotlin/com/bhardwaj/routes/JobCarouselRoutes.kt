@@ -58,7 +58,7 @@ fun Route.jobCarouselRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Job Carousel Not Created.")
+                        message = Message(message = "Job Carousel Already Exists.")
                     )
                 }
             }
@@ -71,13 +71,17 @@ fun Route.jobCarouselRoutes() {
 
             if (validateJobCarousel(this, jobCarousel)) {
                 if (isJobCarouselInDb != null) {
-                    val updatedJobCarousel =
-                        jobCarouselRepository.updateJobCarousel(jobCarousel) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedJobCarousel
-                    )
+                    if (jobCarouselRepository.updateJobCarousel(jobCarousel)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = jobCarousel
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Job Carousel Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

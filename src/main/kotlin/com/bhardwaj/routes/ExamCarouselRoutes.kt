@@ -58,7 +58,7 @@ fun Route.examCarouselRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Exam Carousel Not Created.")
+                        message = Message(message = "Exam Carousel Already Exists.")
                     )
                 }
             }
@@ -72,14 +72,17 @@ fun Route.examCarouselRoutes() {
                 val isExamCarouselInDb = examCarouselRepository.getExamCarouselById(examCarousel.examCarouselId)
 
                 if (isExamCarouselInDb != null) {
-                    val updatedExamCarousel =
-                        examCarouselRepository.updateExamCarousel(examCarousel)
-                            ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedExamCarousel
-                    )
+                    if (examCarouselRepository.updateExamCarousel(examCarousel)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = examCarousel
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Exam Carousel Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

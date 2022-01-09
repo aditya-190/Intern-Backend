@@ -7,7 +7,7 @@ interface CategoryRepository {
     suspend fun getCategoryById(categoryId: String): Category?
     suspend fun insertCategory(category: Category): Boolean
     suspend fun deleteCategory(categoryId: String): Boolean
-    suspend fun updateCategory(category: Category): Category?
+    suspend fun updateCategory(category: Category): Boolean
 
     // For Client
     suspend fun getAllCategory(): List<Category>

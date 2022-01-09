@@ -23,12 +23,13 @@ class JobCarouselRepositoryImpl(
         return jobCarouselTable.deleteOne(filter = JobCarousel::jobCarouselId eq jobCarouselId).wasAcknowledged()
     }
 
-    override suspend fun updateJobCarousel(jobCarousel: JobCarousel): JobCarousel? {
-        jobCarouselTable.updateOne(
+    override suspend fun updateJobCarousel(jobCarousel: JobCarousel): Boolean {
+        if (jobCarouselTable.countDocuments(filter = JobCarousel::jobCarouselImage eq jobCarousel.jobCarouselImage) > 0) return false
+
+        return jobCarouselTable.updateOne(
             filter = JobCarousel::jobCarouselId eq jobCarousel.jobCarouselId,
             target = jobCarousel
-        )
-        return jobCarouselTable.findOne(filter = JobCarousel::jobCarouselId eq jobCarousel.jobCarouselId)
+        ).wasAcknowledged()
     }
 
     override suspend fun getAllJobCarousel(): List<JobCarousel> {

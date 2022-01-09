@@ -58,7 +58,7 @@ fun Route.categoryRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Category Not Created.")
+                        message = Message(message = "Category Already Exists.")
                     )
                 }
             }
@@ -71,13 +71,17 @@ fun Route.categoryRoutes() {
 
             if (validateCategory(this, category)) {
                 if (isCategoryInDb != null) {
-                    val updatedCategory =
-                        categoryRepository.updateCategory(category) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedCategory
-                    )
+                    if (categoryRepository.updateCategory(category)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = category
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Category Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

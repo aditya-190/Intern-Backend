@@ -67,7 +67,7 @@ fun Route.userRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "User Not Created or Already Exists.")
+                        message = Message(message = "User Already Exists.")
                     )
                 }
             }
@@ -80,13 +80,17 @@ fun Route.userRoutes() {
             if (validateUser(this, user)) {
                 val isUserInDb = userRepository.getUserById(user.userId)
                 if (isUserInDb != null) {
-                    val updatedUser =
-                        userRepository.updateUser(user) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedUser
-                    )
+                    if (userRepository.updateUser(user)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = user
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "User Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

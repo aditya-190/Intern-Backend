@@ -6,7 +6,7 @@ interface FilterRepository {
     // For Admin
     suspend fun getFilterById(filterId: String): Filter?
     suspend fun insertFilter(filter: Filter): Boolean
-    suspend fun updateFilter(filter: Filter): Filter?
+    suspend fun updateFilter(filter: Filter): Boolean
     suspend fun deleteFilter(filterId: String): Boolean
 
     // For Client

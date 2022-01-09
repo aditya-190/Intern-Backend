@@ -23,12 +23,13 @@ class ExamCarouselRepositoryImpl(
         return examCarouselTable.deleteOne(filter = ExamCarousel::examCarouselId eq examCarouselId).wasAcknowledged()
     }
 
-    override suspend fun updateExamCarousel(examCarousel: ExamCarousel): ExamCarousel? {
-        examCarouselTable.updateOne(
+    override suspend fun updateExamCarousel(examCarousel: ExamCarousel): Boolean {
+        if (examCarouselTable.countDocuments(filter = ExamCarousel::examCarouselImage eq examCarousel.examCarouselImage) > 0) return false
+
+        return examCarouselTable.updateOne(
             filter = ExamCarousel::examCarouselId eq examCarousel.examCarouselId,
             target = examCarousel
-        )
-        return examCarouselTable.findOne(filter = ExamCarousel::examCarouselId eq examCarousel.examCarouselId)
+        ).wasAcknowledged()
     }
 
     override suspend fun getAllExamCarousel(): List<ExamCarousel> {

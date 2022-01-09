@@ -26,9 +26,17 @@ class JobRepositoryImpl(
         return jobTable.insertOne(document = job).wasAcknowledged()
     }
 
-    override suspend fun updateJob(job: Job): Job? {
-        jobTable.updateOne(filter = Job::postId eq job.postId, target = job)
-        return jobTable.findOne(filter = Job::postId eq job.postId)
+    override suspend fun updateJob(job: Job): Boolean {
+        if (jobTable.find(
+                filters = arrayOf(
+                    Job::companyName eq job.companyName,
+                    Job::postTitle eq job.postTitle,
+                    Job::applyNowPage eq job.applyNowPage
+                )
+            ).toList().isNotEmpty()
+        ) return false
+
+        return jobTable.updateOne(filter = Job::postId eq job.postId, target = job).wasAcknowledged()
     }
 
     override suspend fun deleteJob(jobId: String): Boolean {

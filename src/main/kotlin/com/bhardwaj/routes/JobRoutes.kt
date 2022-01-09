@@ -58,7 +58,7 @@ fun Route.jobRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Job Not Created.")
+                        message = Message(message = "Job Already Created.")
                     )
                 }
             }
@@ -71,13 +71,17 @@ fun Route.jobRoutes() {
 
             if (validateJob(this, job)) {
                 if (isJobInDb != null) {
-                    val updatedJob =
-                        jobRepository.updateJob(job) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedJob
-                    )
+                    if (jobRepository.updateJob(job)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = job
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Job Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

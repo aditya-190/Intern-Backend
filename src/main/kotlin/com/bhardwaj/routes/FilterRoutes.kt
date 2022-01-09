@@ -62,7 +62,7 @@ fun Route.filterRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Filter Not Created.")
+                        message = Message(message = "Filter Already Exists.")
                     )
                 }
             }
@@ -75,13 +75,17 @@ fun Route.filterRoutes() {
 
             if (validateFilter(this, filter)) {
                 if (isFilterInDb != null) {
-                    val updatedFilter =
-                        filterRepository.updateFilter(filter) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedFilter
-                    )
+                    if (filterRepository.updateFilter(filter)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = filter
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Filter Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

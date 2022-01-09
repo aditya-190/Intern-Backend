@@ -58,7 +58,7 @@ fun Route.languageRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Language Not Created.")
+                        message = Message(message = "Language Already Exists.")
                     )
                 }
             }
@@ -71,13 +71,17 @@ fun Route.languageRoutes() {
 
             if (validateLanguage(this, language)) {
                 if (isLanguageInDb != null) {
-                    val updatedLanguage =
-                        languageRepository.updateLanguage(language) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedLanguage
-                    )
+                    if (languageRepository.updateLanguage(language)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = language
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Language Already Exist.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

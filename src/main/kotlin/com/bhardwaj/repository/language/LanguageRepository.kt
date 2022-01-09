@@ -7,7 +7,7 @@ interface LanguageRepository {
     suspend fun getLanguageById(languageId: String): Language?
     suspend fun insertLanguage(language: Language): Boolean
     suspend fun deleteLanguage(languageId: String): Boolean
-    suspend fun updateLanguage(language: Language): Language?
+    suspend fun updateLanguage(language: Language): Boolean
 
     // For Client
     suspend fun getAllLanguage(): List<Language>

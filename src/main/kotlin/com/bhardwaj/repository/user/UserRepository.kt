@@ -11,6 +11,6 @@ interface UserRepository {
     // For Clients
     suspend fun getUserById(userId: String): User?
     suspend fun insertUser(user: User): Boolean
-    suspend fun updateUser(user: User): User?
+    suspend fun updateUser(user: User): Boolean
     suspend fun deleteUser(userId: String): Boolean
 }

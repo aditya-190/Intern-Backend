@@ -23,9 +23,9 @@ class CategoryRepositoryImpl(
         return categoryTable.deleteOne(filter = Category::categoryId eq categoryId).wasAcknowledged()
     }
 
-    override suspend fun updateCategory(category: Category): Category? {
-        categoryTable.updateOne(filter = Category::categoryId eq category.categoryId, target = category)
-        return categoryTable.findOne(filter = Category::categoryId eq category.categoryId)
+    override suspend fun updateCategory(category: Category): Boolean {
+        if (categoryTable.countDocuments(filter = Category::categoryName eq category.categoryName) > 0) return false
+        return categoryTable.updateOne(filter = Category::categoryId eq category.categoryId, target = category).wasAcknowledged()
     }
 
     override suspend fun getAllCategory(): List<Category> {

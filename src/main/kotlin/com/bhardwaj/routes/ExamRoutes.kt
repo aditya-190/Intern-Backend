@@ -58,7 +58,7 @@ fun Route.examRoutes() {
                 } else {
                     call.respond(
                         status = HttpStatusCode.BadRequest,
-                        message = Message(message = "Exam Not Created.")
+                        message = Message(message = "Exam Already Exists.")
                     )
                 }
             }
@@ -71,13 +71,17 @@ fun Route.examRoutes() {
 
             if (validateExam(this, exam)) {
                 if (isExamInDb != null) {
-                    val updatedExam =
-                        examRepository.updateExam(exam) ?: Message(message = "Failed to Update.")
-
-                    call.respond(
-                        status = HttpStatusCode.OK,
-                        message = updatedExam
-                    )
+                    if (examRepository.updateExam(exam)) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = exam
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Exam Already Exists.")
+                        )
+                    }
                 } else {
                     call.respond(
                         status = HttpStatusCode.NotFound,

@@ -35,8 +35,8 @@ class UserRepositoryImpl(
         return userTable.deleteOne(filter = User::userId eq userId).wasAcknowledged()
     }
 
-    override suspend fun updateUser(user: User): User? {
-        userTable.updateOne(filter = User::userId eq user.userId, target = user)
-        return userTable.findOne(filter = User::userId eq user.userId)
+    override suspend fun updateUser(user: User): Boolean {
+        if (userTable.countDocuments(filter = User::email eq user.email) > 0) return false
+        return userTable.updateOne(filter = User::userId eq user.userId, target = user).wasAcknowledged()
     }
 }

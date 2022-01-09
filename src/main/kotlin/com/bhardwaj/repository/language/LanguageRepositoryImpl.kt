@@ -15,7 +15,7 @@ class LanguageRepositoryImpl(
     }
 
     override suspend fun insertLanguage(language: Language): Boolean {
-        if (languageTable.countDocuments(filter = Language::languageName eq language.languageName) > 0) return false
+        if (languageTable.countDocuments(filter = Language::languageNameInEnglish eq language.languageNameInEnglish) > 0) return false
         return languageTable.insertOne(document = language).wasAcknowledged()
     }
 
@@ -23,9 +23,9 @@ class LanguageRepositoryImpl(
         return languageTable.deleteOne(filter = Language::languageId eq languageId).wasAcknowledged()
     }
 
-    override suspend fun updateLanguage(language: Language): Language? {
-        languageTable.updateOne(filter = Language::languageId eq language.languageId, target = language)
-        return languageTable.findOne(filter = Language::languageId eq language.languageId)
+    override suspend fun updateLanguage(language: Language): Boolean {
+        if (languageTable.countDocuments(filter = Language::languageNameInEnglish eq language.languageNameInEnglish) > 0) return false
+        return languageTable.updateOne(filter = Language::languageId eq language.languageId, target = language).wasAcknowledged()
     }
 
     override suspend fun getAllLanguage(): List<Language> {
