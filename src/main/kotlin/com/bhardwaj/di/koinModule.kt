@@ -16,13 +16,14 @@ import com.bhardwaj.repository.language.LanguageRepository
 import com.bhardwaj.repository.language.LanguageRepositoryImpl
 import com.bhardwaj.repository.user.UserRepository
 import com.bhardwaj.repository.user.UserRepositoryImpl
+import com.bhardwaj.utils.ConnectionString.connString
 import org.koin.dsl.module
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 
 val koinModule = module {
     single {
-        KMongo.createClient()
+        KMongo.createClient(connectionString = connString)
             .coroutine
             .getDatabase("intern_db")
     }
