@@ -1,0 +1,1077 @@
+{
+	"info": {
+		"_postman_id": "44ba5207-bd6f-48b2-973a-220cd1a9e5e4",
+		"name": "Intern",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Get All Category",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/category/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"category",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Category By Category ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/category?categoryId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"category"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Category",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categoryName\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/category",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categoryId\": null,\n    \"categoryName\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/category",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"category"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Category",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/category?categoryId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"category"
+							],
+							"query": [
+								{
+									"key": "categoryId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exam Carousel",
+			"item": [
+				{
+					"name": "Get All Exam Carousel",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/examCarousel/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"examCarousel",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Exam Carousel By Exam Carousel ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/examCarousel?examCarouselId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"examCarousel"
+							],
+							"query": [
+								{
+									"key": "examCarouselId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Exam Carousel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"examCarouselImage\": null,\n    \"placeInCarousel\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/examCarousel",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"examCarousel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Exam Carousel",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"examCarouselId\": null,\n    \"examCarouselImage\": null,\n    \"placeInCarousel\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/examCarousel",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"examCarousel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Exam Carousel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/examCarousel?examCarouselId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"examCarousel"
+							],
+							"query": [
+								{
+									"key": "examCarouselId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Exam",
+			"item": [
+				{
+					"name": "Get All Exams",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/exam/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"exam",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Exam By Exam ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/exam?examId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"exam"
+							],
+							"query": [
+								{
+									"key": "examId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Exam",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"examLogo\": null,\n    \"examName\": null,\n    \"examOrganiser\": null,\n    \"numberOfRegistered\": null,\n    \"lastDateToRegister\": null,\n    \"registerPage\": null,\n    \"examImportantDetails\": null,\n    \"examRules\": null,\n    \"examEligibility\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/exam",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Exam",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\": null,\n    \"examLogo\": null,\n    \"examName\": null,\n    \"examOrganiser\": null,\n    \"numberOfRegistered\": null,\n    \"lastDateToRegister\": null,\n    \"registerPage\": null,\n    \"examImportantDetails\": null,\n    \"examRules\": null,\n    \"examEligibility\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/exam",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"exam"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Exam",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/exam?examId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"exam"
+							],
+							"query": [
+								{
+									"key": "examId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Filter",
+			"item": [
+				{
+					"name": "Get All Filters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/filter/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"filter",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Filter By Filter ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/filter?filterId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"filter"
+							],
+							"query": [
+								{
+									"key": "filterId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Filter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"filterInCategoryId\": null,\n    \"filterName\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/filter",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"filter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Filter",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"filterId\": null,\n    \"filterInCategoryId\": null,\n    \"filterName\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/filter",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"filter"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Filter",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/filter?filterId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"filter"
+							],
+							"query": [
+								{
+									"key": "filterId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Job Carousel",
+			"item": [
+				{
+					"name": "Get All Job Carousel",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/jobCarousel/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"jobCarousel",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Job Carousel By Job Carousel ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/jobCarousel?jobCarouselId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"jobCarousel"
+							],
+							"query": [
+								{
+									"key": "jobCarouselId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Job Carousel",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jobCarouselImage\": null,\n    \"placeInCarousel\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/jobCarousel",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"jobCarousel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Job Carousel",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jobCarouselId\": null,\n    \"jobCarouselImage\": null,\n    \"placeInCarousel\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/jobCarousel",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"jobCarousel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Job Carousel",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/jobCarousel?jobCarouselId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"jobCarousel"
+							],
+							"query": [
+								{
+									"key": "jobCarouselId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Job",
+			"item": [
+				{
+					"name": "Get All Jobs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/job/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"job",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Job By Job ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/job?jobId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"job"
+							],
+							"query": [
+								{
+									"key": "jobId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Job",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"companyLogo\": null,\n\"companyName\": null,\n\"postTitle\": null,\n\"postDescription\": null,\n\"applyNowPage\": null,\n\"jobTitle\": null,\n\"jobDuration\": null,\n\"jobLocation\": null,\n\"jobRequirement\": null,\n\"jobEligibility\": null,\n\"aboutCompany\": null,\n\"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/job",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"job"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Job",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"postId\": null,\n    \"companyLogo\": null,\n    \"companyName\": null,\n    \"postTitle\": null,\n    \"postDescription\": null,\n    \"applyNowPage\": null,\n    \"jobTitle\": null,\n    \"jobDuration\": null,\n    \"jobLocation\": null,\n    \"jobRequirement\": null,\n    \"jobEligibility\": null,\n    \"aboutCompany\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/job",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"job"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Job",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/job?jobId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"job"
+							],
+							"query": [
+								{
+									"key": "jobId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Language",
+			"item": [
+				{
+					"name": "Get All Languages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/language/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"language",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Language By Language ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/language?languageId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"language"
+							],
+							"query": [
+								{
+									"key": "languageId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Language",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"languageName\": null,\n    \"languageNameInEnglish\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/language",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"language"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Language",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"languageId\": null,\n    \"languageName\": null,\n    \"languageNameInEnglish\": null,\n    \"lastUpdated\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/language",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"language"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Language",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/language?languageId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"language"
+							],
+							"query": [
+								{
+									"key": "languageId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get All Users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/user/all",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By User ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/user?userId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User By Email Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/user?email=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": null,\n    \"tokenId\": null,\n    \"fcmTokenId\": null,\n    \"userImage\": null,\n    \"name\": null,\n    \"email\": null,\n    \"password\": null,\n    \"languagePreference\": null,\n    \"pushNotificationOn\": null,\n    \"lastLoginTime\": null,\n    \"categoryList\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/user?userId=",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": null,\n    \"password\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register User",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"tokenId\": null,\n    \"fcmTokenId\":null,\n    \"userImage\":null,\n    \"name\":null,\n    \"email\":null,\n    \"password\":null,\n    \"languagePreference\": null,\n    \"pushNotificationOn\": null,\n    \"lastLoginTime\" :null,\n    \"categoryList\" :null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/user",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{ADMIN_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://0.0.0.0:8080",
+			"type": "string"
+		},
+		{
+			"key": "ADMIN_TOKEN",
+			"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJlbWFpbCI6ImFhZGkuYmJoYXJkd2FqQGdtYWlsLmNvbSJ9.3jdo9WUyeASv9GbTWHjRPjLrk5sg0cCKgzcMcC5EF4w",
+			"type": "string"
+		},
+		{
+			"key": "PROD_URL",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
