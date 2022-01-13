@@ -14,22 +14,23 @@ I've gone to great lengths to adhere to the Kotlin + Ktor community styleguides 
 📚 Features & Learnings -
 
 - Created own endpoints, handle client request and receive query parameters.
-- Used Dependency Injection using Koin, Supports Monitoring and Status Page.
-- JWT Token Authentication Provided & Passwords are Hashed using JBCrypt.
+- Used Dependency Injection using **Koin**, Supports Monitoring and Status Page.
+- JWT Token **Authentication** Provided & Passwords are **Hashed** using JBCrypt.
+- **Pagination** Added to Endpoints that fetches large Data - **User**, **Job**, **Exam** and **Filter**.
 - Many Useful tips and tricks of Postman.
-- Deployed to Heroku - https://aditya-intern-backend.herokuapp.com
-- Postman Collection for testing
+- Deployed to **Heroku** - https://aditya-intern-backend.herokuapp.com
+- **Postman** **Collection** for testing
   endpoints: https://github.com/aditya-190/Intern-Backend/blob/master/Intern.postman_collection.json
 
 ## 🏗 Built With:
 
-- Kotlin as programming language.
-- Ktor as web framework.
-- Koin as dependency injection framework.
-- Kotlinx as data bind serialization/deserialization.
-- auth-jwt for JWT spec implementation.
-- MongoDb as database.
-- Kmongo as Sql framework to persistence layer
+- **Kotlin** as programming language.
+- **Ktor** as web framework.
+- **Koin** as dependency injection framework.
+- **Kotlinx** as data bind serialization/deserialization.
+- **auth-jwt** for JWT spec implementation.
+- **MongoDb** as database.
+- **Kmongo** as Sql framework to persistence layer
 
 ## 📽 Sample Demo:
 
