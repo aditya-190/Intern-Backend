@@ -10,6 +10,6 @@ interface FilterRepository {
     suspend fun deleteFilter(filterId: String): Boolean
 
     // For Client
-    suspend fun getAllFilter(): List<Filter>
-    suspend fun getAllFilterByCategoryId(categoryId: String): List<Filter>
+    suspend fun getAllFilter(page: Int, limit: Int): List<Filter>
+    suspend fun getAllFilterByCategoryId(categoryId: String, page: Int, limit: Int): List<Filter>
 }

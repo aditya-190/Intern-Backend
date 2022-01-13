@@ -20,7 +20,17 @@ fun Route.filterRoutes() {
 
             // Get All Filters
             get("/all") {
-                val filters = filterRepository.getAllFilter()
+                val page = call.request.queryParameters["page"]?.toInt() ?: 1
+                val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
+
+                if (page < 1) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "Invalid Page Number")
+                    )
+                }
+
+                val filters = filterRepository.getAllFilter(page = page, limit = limit)
                 call.respond(
                     status = HttpStatusCode.OK,
                     message = filters
@@ -31,6 +41,8 @@ fun Route.filterRoutes() {
             get {
                 val filterId = call.request.queryParameters["filterId"]
                 val categoryId = call.request.queryParameters["categoryId"]
+                val page = call.request.queryParameters["page"]?.toInt() ?: 1
+                val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
 
                 val response = when {
                     !filterId.isNullOrEmpty() -> {
@@ -38,7 +50,11 @@ fun Route.filterRoutes() {
                         filter ?: Message(message = "Required Filter Id Not Found.")
                     }
                     !categoryId.isNullOrEmpty() -> {
-                        val filter = filterRepository.getAllFilterByCategoryId(categoryId = categoryId)
+                        val filter = filterRepository.getAllFilterByCategoryId(
+                            categoryId = categoryId,
+                            page = page,
+                            limit = limit
+                        )
                         filter
                     }
                     else -> {

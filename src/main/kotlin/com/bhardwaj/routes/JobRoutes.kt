@@ -20,7 +20,17 @@ fun Route.jobRoutes() {
 
             // Get All Jobs.
             get("/all") {
-                val jobs = jobRepository.getNewJobs()
+                val page = call.request.queryParameters["page"]?.toInt() ?: 1
+                val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
+
+                if (page < 1) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "Invalid Page Number")
+                    )
+                }
+
+                val jobs = jobRepository.getNewJobs(page = page, limit = limit)
                 call.respond(
                     status = HttpStatusCode.OK,
                     message = jobs

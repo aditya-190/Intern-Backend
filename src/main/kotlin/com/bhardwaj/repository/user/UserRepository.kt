@@ -4,7 +4,7 @@ import com.bhardwaj.models.User
 
 interface UserRepository {
     // For Admin
-    suspend fun getAllUsers(): List<User>
+    suspend fun getAllUsers(page: Int, limit: Int): List<User>
     suspend fun getUserByEmailId(emailId: String): User?
 
     // For Clients

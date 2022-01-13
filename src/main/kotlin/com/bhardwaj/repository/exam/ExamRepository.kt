@@ -10,5 +10,5 @@ interface ExamRepository {
     suspend fun deleteExam(examId: String): Boolean
 
     // For Client
-    suspend fun getNewExams(): List<Exam>
+    suspend fun getNewExams(page: Int, limit: Int): List<Exam>
 }

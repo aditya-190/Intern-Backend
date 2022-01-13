@@ -10,5 +10,5 @@ interface JobRepository {
     suspend fun deleteJob(jobId: String): Boolean
 
     // For Client
-    suspend fun getNewJobs(): List<Job>
+    suspend fun getNewJobs(page: Int, limit: Int): List<Job>
 }

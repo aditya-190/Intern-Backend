@@ -24,7 +24,17 @@ fun Route.userRoutes() {
         authenticate {
             // Get All Users
             get("/all") {
-                val users = userRepository.getAllUsers()
+                val page = call.request.queryParameters["page"]?.toInt() ?: 1
+                val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
+
+                if (page < 1) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "Invalid Page Number")
+                    )
+                }
+
+                val users = userRepository.getAllUsers(page = page, limit = limit)
                 call.respond(
                     status = HttpStatusCode.OK,
                     message = users

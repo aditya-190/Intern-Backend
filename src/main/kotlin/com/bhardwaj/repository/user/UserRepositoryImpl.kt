@@ -10,8 +10,9 @@ class UserRepositoryImpl(
 
     private val userTable = database.getCollection<User>()
 
-    override suspend fun getAllUsers(): List<User> {
-        return userTable.find().descendingSort(User::lastLoginTime).toList()
+    override suspend fun getAllUsers(page: Int, limit: Int): List<User> {
+        return userTable.find().skip(skip = (page - 1) * limit).limit(limit = limit)
+            .partial(true).descendingSort(User::lastLoginTime).toList()
     }
 
     override suspend fun getUserById(userId: String): User? {

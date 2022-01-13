@@ -43,7 +43,8 @@ class JobRepositoryImpl(
         return jobTable.deleteOne(filter = Job::postId eq jobId).wasAcknowledged()
     }
 
-    override suspend fun getNewJobs(): List<Job> {
-        return jobTable.find().descendingSort(Job::lastUpdated).toList()
+    override suspend fun getNewJobs(page: Int, limit: Int): List<Job> {
+        return jobTable.find().skip(skip = (page - 1) * limit).limit(limit = limit)
+            .partial(true).descendingSort(Job::lastUpdated).toList()
     }
 }

@@ -20,7 +20,17 @@ fun Route.examRoutes() {
 
             // Get All Exams.
             get("/all") {
-                val exams = examRepository.getNewExams()
+                val page = call.request.queryParameters["page"]?.toInt() ?: 1
+                val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
+
+                if (page < 1) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = Message(message = "Invalid Page Number")
+                    )
+                }
+
+                val exams = examRepository.getNewExams(page = page, limit = limit)
                 call.respond(
                     status = HttpStatusCode.OK,
                     message = exams

@@ -43,7 +43,8 @@ class ExamRepositoryImpl(
         return examTable.deleteOne(filter = Exam::postId eq examId).wasAcknowledged()
     }
 
-    override suspend fun getNewExams(): List<Exam> {
-        return examTable.find().descendingSort(Exam::lastUpdated).toList()
+    override suspend fun getNewExams(page: Int, limit: Int): List<Exam> {
+        return examTable.find().skip(skip = (page - 1) * limit).limit(limit = limit)
+            .partial(true).descendingSort(Exam::lastUpdated).toList()
     }
 }

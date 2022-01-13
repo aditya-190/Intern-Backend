@@ -28,12 +28,13 @@ class FilterRepositoryImpl(
         return filterTable.deleteOne(filter = Filter::filterId eq filterId).wasAcknowledged()
     }
 
-    override suspend fun getAllFilter(): List<Filter> {
-        return filterTable.find().ascendingSort(Filter::filterName).toList()
+    override suspend fun getAllFilter(page: Int, limit: Int): List<Filter> {
+        return filterTable.find().skip(skip = (page - 1) * limit).limit(limit = limit)
+            .partial(true).ascendingSort(Filter::filterName).toList()
     }
 
-    override suspend fun getAllFilterByCategoryId(categoryId: String): List<Filter> {
-        return filterTable.find(filter = Filter::filterInCategoryId eq categoryId).ascendingSort(Filter::filterName)
-            .toList()
+    override suspend fun getAllFilterByCategoryId(categoryId: String, page: Int, limit: Int): List<Filter> {
+        return filterTable.find(filter = Filter::filterInCategoryId eq categoryId).skip(skip = (page - 1) * limit)
+            .limit(limit = limit).partial(true).ascendingSort(Filter::filterName).toList()
     }
 }
