@@ -76,6 +76,23 @@ fun Route.jobRoutes() {
                 }
             }
 
+            // Insert Multiple Jobs at Once.
+            post("/all") {
+                val jobs: List<Job> = call.receive()
+
+                if (jobRepository.insertMultipleJob(jobs)) {
+                    call.respond(
+                        status = HttpStatusCode.OK,
+                        message = jobs
+                    )
+                } else {
+                    call.respond(
+                        status = HttpStatusCode.BadRequest,
+                        message = Message(message = "Malformed JSON File.")
+                    )
+                }
+            }
+
             // Update the Job.
             put {
                 val job = call.receive<Job>()
@@ -132,38 +149,38 @@ fun Route.jobRoutes() {
 
 private suspend fun validateJob(
     pipelineContext: PipelineContext<Unit, ApplicationCall>,
-    job: Job
+    job: Job? = null
 ): Boolean {
     return when {
-        job.companyName.isNullOrEmpty() -> {
+        job?.companyName.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = Message(message = "Company Name Field is Required.")
             )
             false
         }
-        job.postTitle.isNullOrEmpty() -> {
+        job?.postTitle.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = Message(message = "Post Title Field is Required.")
             )
             false
         }
-        job.postDescription.isNullOrEmpty() -> {
+        job?.postDescription.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = Message(message = "Post Description Field is Required.")
             )
             false
         }
-        job.applyNowPage.isNullOrEmpty() -> {
+        job?.applyNowPage.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = Message(message = "Apply Now Page URL Field is Required.")
             )
             false
         }
-        job.jobTitle.isNullOrEmpty() -> {
+        job?.jobTitle.isNullOrEmpty() -> {
             pipelineContext.call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = Message(message = "Job Title Field is Required.")
