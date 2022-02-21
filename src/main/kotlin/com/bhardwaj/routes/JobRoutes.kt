@@ -10,6 +10,8 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
 
 fun Route.jobRoutes() {
@@ -60,8 +62,8 @@ fun Route.jobRoutes() {
             // Fetch New Jobs.
             get("/fetch") {
                 val numberOfPages = call.request.queryParameters["pages"]?.toInt() ?: 1
-                val keyword = call.request.queryParameters["keyword"]
-                val location = call.request.queryParameters["location"]
+                val keyword = call.request.queryParameters["keyword"] ?: ""
+                val location = call.request.queryParameters["location"] ?: ""
 
                 if (numberOfPages < 1) {
                     call.respond(
@@ -69,18 +71,25 @@ fun Route.jobRoutes() {
                         message = Message(message = "Incorrect Page Number.")
                     )
                 } else {
-//                    // TODO: Call Python Function Here and Check the Return Type. Something Like This
-//                    if(linkedinSpider.main(numberOfPages=numberOfPages, keywords=keyword, location=location)) {
-//                        call.respond(
-//                            status = HttpStatusCode.OK,
-//                            message = Message(message = "Process Completed.")
-//                        )
-//                    } else {
-//                        call.respond(
-//                            status = HttpStatusCode.InternalServerError,
-//                            message = Message(message = "Something Went Wrong.")
-//                        )
-//                    }
+                    withContext(Dispatchers.IO) {
+                        val processBuilder = ProcessBuilder(
+                            "python3", "../main.py", "$numberOfPages", keyword, location
+                        )
+                        val process = processBuilder.start()
+                        val exitCode = process.waitFor()
+
+                        if (exitCode == 0) {
+                            call.respond(
+                                status = HttpStatusCode.OK,
+                                message = Message(message = "Process Completed.")
+                            )
+                        } else {
+                            call.respond(
+                                status = HttpStatusCode.InternalServerError,
+                                message = Message(message = "Something Went Wrong.")
+                            )
+                        }
+                    }
                 }
             }
 
