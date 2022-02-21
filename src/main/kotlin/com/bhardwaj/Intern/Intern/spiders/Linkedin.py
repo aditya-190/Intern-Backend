@@ -85,7 +85,7 @@ def send_data():
     base_url = development_url
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Bearer {TOKEN_HERE}"
+        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJlbWFpbCI6ImFhZGkuYmJoYXJkd2FqQGdtYWlsLmNvbSJ9.3jdo9WUyeASv9GbTWHjRPjLrk5sg0cCKgzcMcC5EF4w"
     }
     json_data = json.load(open('output.json'))
     requests.post(base_url, headers=headers, json=json_data)
