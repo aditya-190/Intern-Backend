@@ -46,6 +46,22 @@ def next_page(response):
     yield items
 
 
+def parse(response):
+    data_entity_urn = response.css(".base-card").xpath("@data-entity-urn").extract()
+    data_search_id = response.css(".base-card").xpath("@data-search-id").extract()
+    data_tracking_id = response.css(".base-card").xpath("@data-tracking-id").extract()
+
+    for i in range(0, len(data_entity_urn)):
+        current_job_posting_id = re.sub("urn:li:jobPosting:", "", data_entity_urn[i])
+        current_data_search_id = data_search_id[i]
+        current_data_tracking_id = data_tracking_id[i]
+
+        next_page_url = "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{}?refId={}%3D%3D&trackingId={}%3D%3D".format(
+            current_job_posting_id, current_data_search_id, current_data_tracking_id)
+
+        yield scrapy.Request(url=next_page_url, callback=next_page)
+
+
 class LinkedinSpider(scrapy.Spider):
     name = "linkedin"
 
@@ -60,22 +76,7 @@ class LinkedinSpider(scrapy.Spider):
             yield scrapy.Request(
                 url='https://www.linkedin.com/jobs-guest/jobs/api/seeMoreJobPostings/search?start={}&keywords={}&location={}'.format(
                     pages, self.keywords.strip().replace(" ", "%20"), self.location.strip().replace(" ", "%20")),
-                callback=self.parse)
-
-    def parse(self, response, **kwargs):
-        data_entity_urn = response.css(".base-card").xpath("@data-entity-urn").extract()
-        data_search_id = response.css(".base-card").xpath("@data-search-id").extract()
-        data_tracking_id = response.css(".base-card").xpath("@data-tracking-id").extract()
-
-        for i in range(0, len(data_entity_urn)):
-            current_job_posting_id = re.sub("urn:li:jobPosting:", "", data_entity_urn[i])
-            current_data_search_id = data_search_id[i]
-            current_data_tracking_id = data_tracking_id[i]
-
-            next_page_url = "https://www.linkedin.com/jobs-guest/jobs/api/jobPosting/{}?refId={}%3D%3D&trackingId={}%3D%3D".format(
-                current_job_posting_id, current_data_search_id, current_data_tracking_id)
-
-            yield scrapy.Request(url=next_page_url, callback=next_page)
+                callback=parse)
 
 
 def send_data():

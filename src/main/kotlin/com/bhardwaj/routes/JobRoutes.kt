@@ -13,6 +13,7 @@ import io.ktor.util.pipeline.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
+import java.io.File
 
 fun Route.jobRoutes() {
     val jobRepository: JobRepository by inject()
@@ -73,8 +74,9 @@ fun Route.jobRoutes() {
                 } else {
                     withContext(Dispatchers.IO) {
                         val processBuilder = ProcessBuilder(
-                            "python3", "../main.py", "$numberOfPages", keyword, location
+                            "python3", "main.py", "$numberOfPages", keyword, location
                         )
+                        processBuilder.directory(File("src/main/kotlin/com/bhardwaj/"))
                         val process = processBuilder.start()
                         val exitCode = process.waitFor()
 
