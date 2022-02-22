@@ -1,5 +1,3 @@
 dateparser
 html2text
-requests
 scrapy
-sys
