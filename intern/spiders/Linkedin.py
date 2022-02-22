@@ -2,13 +2,14 @@ import json
 import logging
 import os
 import re
-import config
+
 import dateparser
 import html2text
 import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
+import config
 from ..items import InternItem
 
 
