@@ -27,21 +27,7 @@ class JobRepositoryImpl(
     }
 
     override suspend fun insertMultipleJob(jobs: List<Job>): Boolean {
-        val moreJobs: MutableList<Job> = mutableListOf()
-        val newJobs: List<Job> = moreJobs
-
-        jobs.forEach {
-            if (jobTable.find(
-                    filters = arrayOf(
-                        Job::companyName eq it.companyName,
-                        Job::postTitle eq it.postTitle,
-                        Job::applyNowPage eq it.applyNowPage
-                    )
-                ).toList().isEmpty()
-            ) moreJobs.add(it)
-        }
-
-        return jobTable.insertMany(newJobs).wasAcknowledged()
+        return jobTable.insertMany(jobs).wasAcknowledged()
     }
 
     override suspend fun updateJob(job: Job): Boolean {

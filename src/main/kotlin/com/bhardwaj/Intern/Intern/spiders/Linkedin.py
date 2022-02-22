@@ -1,7 +1,7 @@
 import json
 import os
 import re
-
+import logging
 import dateparser
 import html2text
 import requests
@@ -70,6 +70,7 @@ class LinkedinSpider(scrapy.Spider):
         self.number_of_pages = number_of_pages
         self.keywords = keywords
         self.location = location
+        logging.getLogger('scrapy').setLevel(logging.WARNING)
 
     def start_requests(self):
         for pages in range(0, self.number_of_pages * 25, 25):
@@ -86,7 +87,7 @@ def send_data():
     base_url = development_url
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJlbWFpbCI6ImFhZGkuYmJoYXJkd2FqQGdtYWlsLmNvbSJ9.3jdo9WUyeASv9GbTWHjRPjLrk5sg0cCKgzcMcC5EF4w"
+        "Authorization": "Bearer {TOKEN HERE}"
     }
     json_data = json.load(open('output.json'))
     requests.post(base_url, headers=headers, json=json_data)
@@ -106,4 +107,4 @@ def main(number_of_pages, keywords, location):
 
     process.crawl(LinkedinSpider, number_of_pages=number_of_pages, keywords=keywords, location=location)
     process.start()
-    return send_data()
+    send_data()
