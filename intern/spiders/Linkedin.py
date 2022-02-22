@@ -81,6 +81,23 @@ class LinkedinSpider(scrapy.Spider):
             yield scrapy.Request(url=next_page_url, callback=next_page)
 
 
+def send_notification(message):
+    server_token = os.environ.get("FIREBASE_SERVER_KEY")
+    device_token = os.environ.get("ADMIN_DEVICE_TOKEN")
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'key=' + server_token,
+    }
+
+    body = {
+        'notification': {'title': 'Script Status', 'body': message},
+        'to': device_token,
+        'priority': 'high',
+    }
+    requests.post("https://fcm.googleapis.com/fcm/send", headers=headers, data=json.dumps(body))
+
+
 def send_data(mode):
     production_url = "https://aditya-intern-backend.herokuapp.com/job/all"
     development_url = "http://0.0.0.0:8080/job/all"
@@ -92,10 +109,15 @@ def send_data(mode):
 
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJlbWFpbCI6ImFhZGkuYmJoYXJkd2FqQGdtYWlsLmNvbSJ9.3jdo9WUyeASv9GbTWHjRPjLrk5sg0cCKgzcMcC5EF4w"
+        "Authorization": "Bearer {}".format(os.environ.get("AUTHENTICATION_TOKEN"))
     }
     json_data = json.load(open('output.json'))
-    requests.post(base_url, headers=headers, json=json_data)
+    response = requests.post(base_url, headers=headers, json=json_data)
+
+    if response.status_code == 200:
+        send_notification("Data Inserted Successfully.")
+    else:
+        send_notification("Something Went Wrong.")
 
 
 def main(number_of_pages, keywords, location, mode):
