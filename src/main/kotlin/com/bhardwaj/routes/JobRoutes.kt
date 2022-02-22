@@ -86,9 +86,10 @@ fun Route.jobRoutes() {
                                 message = Message(message = "Process Completed.")
                             )
                         } else {
+                            val output = String(process.errorStream.readBytes())
                             call.respond(
                                 status = HttpStatusCode.InternalServerError,
-                                message = Message(message = "Something Went Wrong.")
+                                message = Message(message = "Something Went Wrong. -> $output")
                             )
                         }
                     }
