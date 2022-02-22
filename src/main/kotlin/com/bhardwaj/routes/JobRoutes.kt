@@ -76,7 +76,6 @@ fun Route.jobRoutes() {
                         val processBuilder = ProcessBuilder(
                             "python", "main.py", "$numberOfPages", keyword, location
                         )
-                        processBuilder.directory(File("src/main/kotlin/com/bhardwaj/"))
                         val process = processBuilder.start()
                         val exitCode = process.waitFor()
 
