@@ -77,24 +77,11 @@ fun Route.jobRoutes() {
                     )
                 } else {
                     withContext(Dispatchers.IO) {
-                        val processBuilder = ProcessBuilder(
-                            pythonPath, "main.py", "$numberOfPages", keyword, location, mode
+                        ProcessBuilder(pythonPath, "main.py", "$numberOfPages", keyword, location, mode).start()
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Process Completed.")
                         )
-                        val process = processBuilder.start()
-                        val exitCode = process.waitFor()
-
-                        if (exitCode == 0) {
-                            call.respond(
-                                status = HttpStatusCode.OK,
-                                message = Message(message = "Process Completed.")
-                            )
-                        } else {
-                            val output = String(process.errorStream.readBytes())
-                            call.respond(
-                                status = HttpStatusCode.InternalServerError,
-                                message = Message(message = output)
-                            )
-                        }
                     }
                 }
             }
