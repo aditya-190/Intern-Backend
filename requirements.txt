@@ -1,4 +1,5 @@
-scrapy
-requests
 dateparser
 html2text
+requests
+scrapy
+sys
