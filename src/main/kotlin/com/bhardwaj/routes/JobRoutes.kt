@@ -74,7 +74,7 @@ fun Route.jobRoutes() {
                 } else {
                     withContext(Dispatchers.IO) {
                         val processBuilder = ProcessBuilder(
-                            "venv/bin/python", "main.py", "$numberOfPages", keyword, location
+                            "python", "main.py", "$numberOfPages", keyword, location
                         )
                         val process = processBuilder.start()
                         val exitCode = process.waitFor()
