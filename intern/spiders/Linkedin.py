@@ -2,7 +2,7 @@ import json
 import logging
 import os
 import re
-
+import config
 import dateparser
 import html2text
 import requests
@@ -81,9 +81,13 @@ class LinkedinSpider(scrapy.Spider):
             yield scrapy.Request(url=next_page_url, callback=next_page)
 
 
-def send_notification(message):
-    server_token = os.environ.get("FIREBASE_SERVER_KEY")
-    device_token = os.environ.get("ADMIN_DEVICE_TOKEN")
+def send_notification(mode, message):
+    if mode == "PRODUCTION":
+        server_token = os.environ.get("FIREBASE_SERVER_KEY")
+        device_token = os.environ.get("ADMIN_DEVICE_TOKEN")
+    else:
+        server_token = config.FIREBASE_SERVER_KEY
+        device_token = config.ADMIN_DEVICE_TOKEN
 
     headers = {
         'Content-Type': 'application/json',
@@ -104,20 +108,22 @@ def send_data(mode):
 
     if mode == "PRODUCTION":
         base_url = production_url
+        authentication_token = os.environ.get("AUTHENTICATION_TOKEN")
     else:
         base_url = development_url
+        authentication_token = config.AUTHENTICATION_TOKEN
 
     headers = {
         "Content-Type": "application/json; charset=utf-8",
-        "Authorization": "Bearer {}".format(os.environ.get("AUTHENTICATION_TOKEN"))
+        "Authorization": "Bearer {}".format(authentication_token)
     }
     json_data = json.load(open('output.json'))
     response = requests.post(base_url, headers=headers, json=json_data)
 
     if response.status_code == 200:
-        send_notification("Data Inserted Successfully.")
+        send_notification(mode, "Data Inserted Successfully.")
     else:
-        send_notification("Something Went Wrong.")
+        send_notification(mode, "Something Went Wrong.")
 
 
 def main(number_of_pages, keywords, location, mode):
