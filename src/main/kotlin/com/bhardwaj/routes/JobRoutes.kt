@@ -10,8 +10,6 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import io.ktor.util.pipeline.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import org.koin.ktor.ext.inject
 
 fun Route.jobRoutes() {
@@ -71,26 +69,22 @@ fun Route.jobRoutes() {
                         message = Message(message = "Incorrect Page Number.")
                     )
                 } else {
-                    withContext(Dispatchers.IO) {
-                        val processBuilder = ProcessBuilder(
-                            "python", "main.py", "$numberOfPages", keyword, location
-                        )
-                        val process = processBuilder.start()
-                        val exitCode = process.waitFor()
+                    val processBuilder = ProcessBuilder(
+                        "python", "main.py", "$numberOfPages", keyword, location
+                    )
+                    val process = processBuilder.start()
+                    val exitCode = process.waitFor()
 
-                        withContext(Dispatchers.Main) {
-                            if (exitCode == 0) {
-                                call.respond(
-                                    status = HttpStatusCode.OK,
-                                    message = Message(message = "Process Completed.")
-                                )
-                            } else {
-                                call.respond(
-                                    status = HttpStatusCode.InternalServerError,
-                                    message = Message(message = "Something Went Wrong.")
-                                )
-                            }
-                        }
+                    if (exitCode == 0) {
+                        call.respond(
+                            status = HttpStatusCode.OK,
+                            message = Message(message = "Process Completed.")
+                        )
+                    } else {
+                        call.respond(
+                            status = HttpStatusCode.InternalServerError,
+                            message = Message(message = "Something Went Wrong.")
+                        )
                     }
                 }
             }

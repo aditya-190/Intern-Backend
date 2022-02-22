@@ -1,10 +1,9 @@
+import dateparser
+import html2text
 import json
 import logging
 import os
 import re
-
-import dateparser
-import html2text
 import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
@@ -108,4 +107,4 @@ def main(number_of_pages, keywords, location):
 
     process.crawl(LinkedinSpider, number_of_pages=number_of_pages, keywords=keywords, location=location)
     process.start()
-    # send_data()
+    send_data()
