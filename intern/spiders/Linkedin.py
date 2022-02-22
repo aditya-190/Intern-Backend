@@ -9,7 +9,6 @@ import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
 
-import config
 from ..items import InternItem
 
 
@@ -87,6 +86,7 @@ def send_notification(mode, message):
         server_token = os.environ.get("FIREBASE_SERVER_KEY")
         device_token = os.environ.get("ADMIN_DEVICE_TOKEN")
     else:
+        import config
         server_token = config.FIREBASE_SERVER_KEY
         device_token = config.ADMIN_DEVICE_TOKEN
 
@@ -111,6 +111,7 @@ def send_data(mode):
         base_url = production_url
         authentication_token = os.environ.get("AUTHENTICATION_TOKEN")
     else:
+        import config
         base_url = development_url
         authentication_token = config.AUTHENTICATION_TOKEN
 
