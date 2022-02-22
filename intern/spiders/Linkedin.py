@@ -1,9 +1,10 @@
-import dateparser
-import html2text
 import json
 import logging
 import os
 import re
+
+import dateparser
+import html2text
 import requests
 import scrapy
 from scrapy.crawler import CrawlerProcess
@@ -80,11 +81,15 @@ class LinkedinSpider(scrapy.Spider):
             yield scrapy.Request(url=next_page_url, callback=next_page)
 
 
-def send_data():
+def send_data(mode):
     production_url = "https://aditya-intern-backend.herokuapp.com/job/all"
-    # development_url = "http://0.0.0.0:8080/job/all"
+    development_url = "http://0.0.0.0:8080/job/all"
 
-    base_url = production_url
+    if mode == "PRODUCTION":
+        base_url = production_url
+    else:
+        base_url = development_url
+
     headers = {
         "Content-Type": "application/json; charset=utf-8",
         "Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJodHRwOi8vMC4wLjAuMDo4MDgwL2hlbGxvIiwiaXNzIjoiaHR0cDovLzAuMC4wLjA6ODA4MC8iLCJlbWFpbCI6ImFhZGkuYmJoYXJkd2FqQGdtYWlsLmNvbSJ9.3jdo9WUyeASv9GbTWHjRPjLrk5sg0cCKgzcMcC5EF4w"
@@ -93,7 +98,7 @@ def send_data():
     requests.post(base_url, headers=headers, json=json_data)
 
 
-def main(number_of_pages, keywords, location):
+def main(number_of_pages, keywords, location, mode):
     if os.path.exists("output.json"):
         os.remove("output.json")
 
@@ -107,4 +112,4 @@ def main(number_of_pages, keywords, location):
 
     process.crawl(LinkedinSpider, number_of_pages=number_of_pages, keywords=keywords, location=location)
     process.start()
-    send_data()
+    send_data(mode=mode)
