@@ -21,6 +21,11 @@ I've gone to great lengths to adhere to the Kotlin + Ktor community styleguides 
 - Deployed to **Heroku** - https://aditya-intern-backend.herokuapp.com
 - **Postman** **Collection** for testing
   endpoints: https://github.com/aditya-190/Intern-Backend/blob/master/Intern.postman_collection.json
+  
+## Updates -
+- Now you can add **multiple** **jobs** in a **single** **request**.
+- Intern Scrapper is **integrated**.
+- After Successfull data insertion to database, it will send **Notification** to ADMIN using **FCM.**
 
 ## 🏗 Built With:
 
