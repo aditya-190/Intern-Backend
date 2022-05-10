@@ -6,9 +6,7 @@ import io.ktor.routing.*
 
 fun Application.configureRouting() {
     routing {
-        get("/") {
-            call.respondText("Hello World! - Intern API is UP. You are good to GO :)")
-        }
+        defaultRoute()
         categoryRoutes()
         examCarouselRoutes()
         examRoutes()
