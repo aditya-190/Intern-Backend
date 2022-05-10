@@ -11,6 +11,12 @@ data to my Android Application - Intern.
 
 I've gone to great lengths to adhere to the Kotlin + Ktor community styleguides & best practices.
 
+What I'm trying to Do ?
+- [x] Android UI Design (Checkout -> [Figma Designs](https://www.figma.com/file/gqLxGVytcxU1t1nzUvsCqk/Intern-Android-Application?node-id=0%3A1))
+- [x] API & Database   (Checkout -> [Intern-Backend](https://github.com/aditya-190/Intern-Backend))
+- [x] Web Scraper   (Checkout -> [Intern-Scrapper](https://github.com/aditya-190/Intern-Scrapper))
+- [ ] Android App (In Progress -> [Intern-Application](https://github.com/aditya-190/Intern-Application)).
+
 📚 Features & Learnings -
 
 - Created own endpoints, handle client request and receive query parameters.
