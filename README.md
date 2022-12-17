@@ -24,7 +24,7 @@ What I'm trying to Do ?
 - JWT Token **Authentication** Provided & Passwords are **Hashed** using JBCrypt.
 - **Pagination** Added to Endpoints that fetches large Data - **User**, **Job**, **Exam** and **Filter**.
 - Many Useful tips and tricks of Postman.
-- Deployed to **Heroku** - https://aditya-intern-backend.herokuapp.com
+- ~~Deployed to **Heroku** - https://aditya-intern-backend.herokuapp.com~~ **(Not Available as Heroku free Dynos are no longer supported)**
 - **Postman** **Collection** for testing
   endpoints: https://github.com/aditya-190/Intern-Backend/blob/master/Intern.postman_collection.json
   
