@@ -8,6 +8,7 @@ val jbCryptVersion: String by project
 plugins {
     application
     kotlin("jvm") version "1.6.10"
+    id("io.ktor.plugin") version "2.2.4"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
 }
 
@@ -15,6 +16,10 @@ group = "com.bhardwaj"
 version = "0.0.1"
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
+}
+
+application {
+    mainClass.set("com.bhardwaj.intern-backend")
 }
 
 // Necessary For Deploying to Heroku.
